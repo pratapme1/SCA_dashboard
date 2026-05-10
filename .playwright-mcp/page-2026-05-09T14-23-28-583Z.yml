@@ -1,0 +1,316 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - img [ref=e7]
+      - generic [ref=e9]:
+        - generic [ref=e10]:
+          - generic [ref=e11]: SCA Risk Intelligence
+          - generic [ref=e12]: POC
+        - generic [ref=e13]: Supply Chain Assurance · Live
+      - generic [ref=e16]: DDL feed refreshed Taiwan advisories
+      - button "Dark" [ref=e17] [cursor=pointer]:
+        - img [ref=e18]
+        - generic [ref=e21]: Dark
+    - generic [ref=e22]:
+      - generic [ref=e23]:
+        - generic [ref=e25]: Suppliers monitored
+        - generic [ref=e26]:
+          - generic [ref=e27]: 1,247
+          - generic [ref=e28]: across 6 categories
+      - generic [ref=e29]:
+        - generic [ref=e31]: Active risks
+        - generic [ref=e32]:
+          - generic [ref=e33]: "34"
+          - generic [ref=e34]: ↑ 6 last 24h
+      - generic [ref=e35]:
+        - generic [ref=e37]: Pending escalations
+        - generic [ref=e38]:
+          - generic [ref=e39]: "8"
+          - generic [ref=e40]: 3 awaiting director sign-off
+      - generic [ref=e41]:
+        - generic [ref=e42]:
+          - generic [ref=e43]: Analyst hours saved · today
+          - button "How is this calculated?" [ref=e44]: i
+        - generic [ref=e45]:
+          - generic [ref=e46]: 4.2 hr
+          - generic [ref=e47]: 52% reduction
+      - generic [ref=e49]:
+        - generic [ref=e50]: Risk posture
+        - button "How is this calculated?" [ref=e51]: i
+  - main [ref=e52]:
+    - generic [ref=e55]:
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - generic [ref=e58]: Unified Data Ingestion
+          - heading "Automated feeds" [level=3] [ref=e59]
+        - button "Sync now" [ref=e60] [cursor=pointer]:
+          - img [ref=e61]
+          - text: Sync now
+      - generic [ref=e65]:
+        - button "ERP Systems SAP S/4 · Oracle EBS Synced" [ref=e67]:
+          - img [ref=e69]
+          - generic [ref=e73]:
+            - generic [ref=e75]: ERP Systems
+            - generic [ref=e77]: SAP S/4 · Oracle EBS
+          - generic [ref=e79]: Synced
+        - button "Third-Party Risk Tool RiskMethods · Resilinc Synced" [ref=e81]:
+          - img [ref=e83]
+          - generic [ref=e85]:
+            - generic [ref=e87]: Third-Party Risk Tool
+            - generic [ref=e89]: RiskMethods · Resilinc
+          - generic [ref=e91]: Synced
+        - button "DDL Feeds Denied / restricted lists Delayed" [ref=e93] [cursor=pointer]:
+          - img [ref=e95]
+          - generic [ref=e98]:
+            - generic [ref=e100]: DDL Feeds
+            - generic [ref=e102]: Denied / restricted lists
+          - generic [ref=e103]:
+            - generic [ref=e104]: Delayed
+            - img [ref=e106]
+      - generic [ref=e109]:
+        - generic [ref=e110]: 5 sources · 1 delayed · 1 failed
+        - generic [ref=e111]: Auto-retry in 4m
+    - generic [ref=e113]:
+      - generic [ref=e114]:
+        - generic [ref=e115]:
+          - generic [ref=e116]: AI-Scored Risk Queue
+          - heading "Standardized across all analysts" [level=3] [ref=e117]
+        - generic [ref=e118]:
+          - generic [ref=e119]:
+            - img [ref=e120]
+            - generic [ref=e122]: Junior analysts get senior-level intel
+          - button "AI Analyze" [disabled] [ref=e123]:
+            - img [ref=e124]
+            - generic [ref=e126]: AI Analyze
+          - button "Filters" [ref=e127] [cursor=pointer]:
+            - img [ref=e128]
+            - text: Filters
+      - generic [ref=e132]:
+        - img [ref=e133]
+        - textbox "Search 1,247 monitored suppliers…" [ref=e136]
+      - generic [ref=e137]:
+        - generic [ref=e138]:
+          - generic [ref=e139]: New signals
+          - generic [ref=e140]: "+2"
+        - generic [ref=e141]:
+          - generic [ref=e142]: Auto-joined
+          - generic [ref=e143]: 9 feeds
+        - generic [ref=e144]:
+          - generic [ref=e145]: Next retry
+          - generic [ref=e146]: 4m
+      - tablist [ref=e148]:
+        - tab "All 10" [selected] [ref=e149] [cursor=pointer]:
+          - img [ref=e150]
+          - generic [ref=e154]: All
+          - generic [ref=e155]: "10"
+        - tab "Critical 2" [ref=e156] [cursor=pointer]:
+          - img [ref=e157]
+          - generic [ref=e159]: Critical
+          - generic [ref=e160]: "2"
+        - tab "Mine 1" [ref=e161] [cursor=pointer]:
+          - img [ref=e162]
+          - generic [ref=e167]: Mine
+          - generic [ref=e168]: "1"
+        - tab "Escalated 1" [ref=e169] [cursor=pointer]:
+          - img [ref=e170]
+          - generic [ref=e173]: Escalated
+          - generic [ref=e174]: "1"
+        - tab "Needs evidence 7" [ref=e175] [cursor=pointer]:
+          - img [ref=e176]
+          - generic [ref=e179]: Needs evidence
+          - generic [ref=e180]: "7"
+      - generic [ref=e181]:
+        - generic [ref=e182]: Supplier
+        - generic [ref=e183]: Severity
+        - generic [ref=e184]: Confidence
+        - generic [ref=e185]: Owner / SLA
+        - generic [ref=e186]: Recommended
+        - generic [ref=e187]: Status
+      - generic:
+        - button "Delta Electronics TW Cyber · Third-Party Risk Tool · PowerEdge R760 +2 Critical 96% Unassigned SLA 2h Escalate New" [ref=e188] [cursor=pointer]:
+          - generic [ref=e189]:
+            - generic [ref=e190]:
+              - generic [ref=e191]: Delta Electronics
+              - generic [ref=e192]: TW
+            - generic [ref=e193]:
+              - img [ref=e195]
+              - generic [ref=e198]: Cyber · Third-Party Risk Tool · PowerEdge R760 +2
+          - generic [ref=e200]: Critical
+          - generic [ref=e206]: 96%
+          - generic [ref=e207]:
+            - generic [ref=e208]: Unassigned
+            - generic [ref=e209]: SLA 2h
+          - generic [ref=e211]:
+            - img [ref=e212]
+            - text: Escalate
+          - generic [ref=e215]: New
+        - button "Foxconn TW Geopolitical · DDL Feeds · PowerEdge R760 +2 Critical 94% V. Pratap Kumar SLA 2h Escalate New" [ref=e216] [cursor=pointer]:
+          - generic [ref=e217]:
+            - generic [ref=e218]:
+              - generic [ref=e219]: Foxconn
+              - generic [ref=e220]: TW
+            - generic [ref=e221]:
+              - img [ref=e223]
+              - generic [ref=e226]: Geopolitical · DDL Feeds · PowerEdge R760 +2
+          - generic [ref=e228]: Critical
+          - generic [ref=e234]: 94%
+          - generic [ref=e235]:
+            - generic [ref=e236]: V. Pratap Kumar
+            - generic [ref=e237]: SLA 2h
+          - generic [ref=e239]:
+            - img [ref=e240]
+            - text: Escalate
+          - generic [ref=e243]: New
+        - button "Jabil US Cyber · Third-Party Risk Tool · Latitude 7450 +1 High 91% A. Rivera SLA 24h Escalate Escalated" [ref=e244] [cursor=pointer]:
+          - generic [ref=e245]:
+            - generic [ref=e246]:
+              - generic [ref=e247]: Jabil
+              - generic [ref=e248]: US
+            - generic [ref=e249]:
+              - img [ref=e251]
+              - generic [ref=e254]: Cyber · Third-Party Risk Tool · Latitude 7450 +1
+          - generic [ref=e256]: High
+          - generic [ref=e262]: 91%
+          - generic [ref=e263]:
+            - generic [ref=e264]: A. Rivera
+            - generic [ref=e265]: SLA 24h
+          - generic [ref=e267]:
+            - img [ref=e268]
+            - text: Escalate
+          - generic [ref=e271]: Escalated
+        - button "Quanta Computer TW Operational · ERP Systems · Latitude 7450 +1 High 88% D. Patel SLA 24h Investigate In Review" [ref=e272] [cursor=pointer]:
+          - generic [ref=e273]:
+            - generic [ref=e274]:
+              - generic [ref=e275]: Quanta Computer
+              - generic [ref=e276]: TW
+            - generic [ref=e277]:
+              - img [ref=e279]
+              - generic [ref=e283]: Operational · ERP Systems · Latitude 7450 +1
+          - generic [ref=e285]: High
+          - generic [ref=e291]: 88%
+          - generic [ref=e292]:
+            - generic [ref=e293]: D. Patel
+            - generic [ref=e294]: SLA 24h
+          - generic [ref=e296]:
+            - img [ref=e297]
+            - text: Investigate
+          - generic [ref=e301]: In Review
+        - button "Wistron TW Financial · Revenue Consolidation · Latitude 7450 +1 High 86% Unassigned SLA 24h Escalate New" [ref=e302] [cursor=pointer]:
+          - generic [ref=e303]:
+            - generic [ref=e304]:
+              - generic [ref=e305]: Wistron
+              - generic [ref=e306]: TW
+            - generic [ref=e307]:
+              - img [ref=e309]
+              - generic [ref=e311]: Financial · Revenue Consolidation · Latitude 7450 +1
+          - generic [ref=e313]: High
+          - generic [ref=e319]: 86%
+          - generic [ref=e320]:
+            - generic [ref=e321]: Unassigned
+            - generic [ref=e322]: SLA 24h
+          - generic [ref=e324]:
+            - img [ref=e325]
+            - text: Escalate
+          - generic [ref=e328]: New
+        - button "Pegatron TW Compliance · Written Reports & PDFs · XPS 13 +1 Medium 82% L. Nakamura SLA 3d Investigate In Review" [ref=e329] [cursor=pointer]:
+          - generic [ref=e330]:
+            - generic [ref=e331]:
+              - generic [ref=e332]: Pegatron
+              - generic [ref=e333]: TW
+            - generic [ref=e334]:
+              - img [ref=e336]
+              - generic [ref=e338]: Compliance · Written Reports & PDFs · XPS 13 +1
+          - generic [ref=e340]: Medium
+          - generic [ref=e346]: 82%
+          - generic [ref=e347]:
+            - generic [ref=e348]: L. Nakamura
+            - generic [ref=e349]: SLA 3d
+          - generic [ref=e351]:
+            - img [ref=e352]
+            - text: Investigate
+          - generic [ref=e356]: In Review
+      - generic [ref=e358]:
+        - generic [ref=e359]: 6 shown · 10 matched · 10 active
+        - generic [ref=e360]:
+          - img [ref=e361]
+          - text: Re-scored 4 min ago
+    - generic [ref=e364]:
+      - generic [ref=e365]:
+        - generic [ref=e366]: Blast Radius · R-001
+        - generic [ref=e367]:
+          - img [ref=e369]
+          - heading "Foxconn" [level=2] [ref=e372]
+          - generic [ref=e373]: TW
+          - generic [ref=e374]: Critical
+        - generic [ref=e376]:
+          - generic [ref=e377]: Geopolitical
+          - generic [ref=e378]: ·
+          - generic [ref=e379]: Detected May 8 via DDL Feeds
+          - generic [ref=e380]: ·
+          - generic [ref=e381]:
+            - img [ref=e382]
+            - text: 94% confidence
+      - tablist [ref=e385]:
+        - tab "Impact" [selected] [ref=e386] [cursor=pointer]:
+          - img [ref=e387]
+          - generic [ref=e389]: Impact
+        - tab "Evidence" [ref=e390] [cursor=pointer]:
+          - img [ref=e391]
+          - generic [ref=e394]: Evidence
+        - tab "Actions" [ref=e395] [cursor=pointer]:
+          - img [ref=e396]
+          - generic [ref=e398]: Actions
+        - tab "Timeline 4" [ref=e399] [cursor=pointer]:
+          - img [ref=e400]
+          - generic [ref=e403]: Timeline
+          - generic [ref=e404]: "4"
+      - generic:
+        - generic [ref=e405]:
+          - paragraph [ref=e406]: Cross-strait military exercises announced near Foxconn's Kaohsiung assembly cluster, with shipping lane advisories issued by Taiwan MOTC. Carrier rerouting could delay outbound finished goods by 11–18 days at current inventory burn.
+          - paragraph [ref=e407]: AI ·Single-source server motherboard line + DDL geopolitical advisory + <20 day inventory buffer.
+        - generic [ref=e409]:
+          - generic [ref=e410]: If this materializes
+          - generic [ref=e411]:
+            - generic [ref=e412]:
+              - generic [ref=e413]:
+                - img [ref=e414]
+                - text: Revenue exposure
+              - generic [ref=e416]: $148M
+              - generic [ref=e417]: quarterly
+            - generic [ref=e418]:
+              - generic [ref=e419]:
+                - img [ref=e420]
+                - text: Days to impact
+              - generic [ref=e423]: "14"
+              - generic [ref=e424]: at current inventory
+          - generic [ref=e425]:
+            - generic [ref=e426]:
+              - generic [ref=e427]:
+                - img [ref=e428]
+                - text: Products
+              - generic [ref=e432]: PowerEdge R760, PowerEdge XE9680, Precision 7960
+            - generic [ref=e433]:
+              - generic [ref=e434]: Alternative
+              - generic [ref=e440]:
+                - img [ref=e441]
+                - text: SINGLE SOURCE
+                - generic [ref=e443]: · qualification required
+            - generic [ref=e444]:
+              - generic [ref=e445]:
+                - img [ref=e446]
+                - text: Chain
+              - generic [ref=e452]:
+                - generic [ref=e453]:
+                  - generic [ref=e454]: T1
+                  - generic [ref=e455]: Foxconn (T1 assembly)
+                - img [ref=e457]
+                - generic [ref=e459]:
+                  - generic [ref=e460]: T2
+                  - generic [ref=e461]: Murata (T2 capacitors)
+                - img [ref=e463]
+                - generic [ref=e465]:
+                  - generic [ref=e466]: RAW
+                  - generic [ref=e467]: DRC tantalum (raw)
+  - button "Ask Assistant" [ref=e468] [cursor=pointer]:
+    - img [ref=e469]
+    - generic [ref=e471]: Ask Assistant

@@ -1,0 +1,260 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - img [ref=e7]
+      - generic [ref=e9]:
+        - generic [ref=e10]: SCA Risk Intelligence
+        - generic [ref=e11]: Final-round demo
+    - generic [ref=e13]:
+      - generic [ref=e14]: Director readout
+      - generic [ref=e15]: "2 critical suppliers threaten $240M. Decision: escalate Foxconn today."
+    - generic [ref=e16]:
+      - generic [ref=e17]:
+        - generic [ref=e18]: Today
+        - generic [ref=e19]: $240M
+      - button "Dark" [ref=e20] [cursor=pointer]:
+        - img [ref=e21]
+        - generic [ref=e24]: Dark
+  - main [ref=e25]:
+    - generic [ref=e27]:
+      - generic [ref=e28]:
+        - generic [ref=e29]:
+          - generic [ref=e30]: Decision Queue
+          - heading "Only the risks that need a leadership call" [level=3] [ref=e31]
+        - generic [ref=e32]: 6 shown
+      - tablist [ref=e34]:
+        - tab "All 10" [selected] [ref=e35] [cursor=pointer]:
+          - img [ref=e36]
+          - generic [ref=e40]: All
+          - generic [ref=e41]: "10"
+        - tab "Critical 2" [ref=e42] [cursor=pointer]:
+          - img [ref=e43]
+          - generic [ref=e45]: Critical
+          - generic [ref=e46]: "2"
+        - tab "Needs evidence 7" [ref=e47] [cursor=pointer]:
+          - img [ref=e48]
+          - generic [ref=e51]: Needs evidence
+          - generic [ref=e52]: "7"
+      - generic [ref=e53]:
+        - generic [ref=e54]: Supplier
+        - generic [ref=e55]: Exposure
+        - generic [ref=e56]: Impact
+        - generic [ref=e57]: Decision
+      - generic [ref=e58]:
+        - button "Delta Electronics TW Cyber · Third-Party Risk Tool · PowerEdge R760 +2 $92M quarterly 7d buffer Escalate Critical 96% SLA 2h" [ref=e59] [cursor=pointer]:
+          - generic [ref=e60]:
+            - generic [ref=e61]:
+              - generic [ref=e62]: Delta Electronics
+              - generic [ref=e63]: TW
+            - generic [ref=e64]:
+              - img [ref=e66]
+              - generic [ref=e69]: Cyber · Third-Party Risk Tool · PowerEdge R760 +2
+          - generic [ref=e70]:
+            - generic [ref=e71]: $92M
+            - generic [ref=e72]: quarterly
+          - generic [ref=e73]:
+            - generic [ref=e74]: 7d
+            - generic [ref=e75]: buffer
+          - generic [ref=e76]:
+            - generic [ref=e77]:
+              - img [ref=e78]
+              - text: Escalate
+            - generic [ref=e80]:
+              - generic [ref=e81]: Critical
+              - generic [ref=e83]: 96%
+              - generic [ref=e84]: SLA 2h
+        - button "Foxconn TW Geopolitical · DDL Feeds · PowerEdge R760 +2 $148M quarterly 14d buffer Escalate Critical 94% SLA 2h" [ref=e85] [cursor=pointer]:
+          - generic [ref=e86]:
+            - generic [ref=e87]:
+              - generic [ref=e88]: Foxconn
+              - generic [ref=e89]: TW
+            - generic [ref=e90]:
+              - img [ref=e92]
+              - generic [ref=e95]: Geopolitical · DDL Feeds · PowerEdge R760 +2
+          - generic [ref=e96]:
+            - generic [ref=e97]: $148M
+            - generic [ref=e98]: quarterly
+          - generic [ref=e99]:
+            - generic [ref=e100]: 14d
+            - generic [ref=e101]: buffer
+          - generic [ref=e102]:
+            - generic [ref=e103]:
+              - img [ref=e104]
+              - text: Escalate
+            - generic [ref=e106]:
+              - generic [ref=e107]: Critical
+              - generic [ref=e109]: 94%
+              - generic [ref=e110]: SLA 2h
+        - button "Jabil US Cyber · Third-Party Risk Tool · Latitude 7450 +1 $67M quarterly 35d buffer Escalate High 91% SLA 24h" [ref=e111] [cursor=pointer]:
+          - generic [ref=e112]:
+            - generic [ref=e113]:
+              - generic [ref=e114]: Jabil
+              - generic [ref=e115]: US
+            - generic [ref=e116]:
+              - img [ref=e118]
+              - generic [ref=e121]: Cyber · Third-Party Risk Tool · Latitude 7450 +1
+          - generic [ref=e122]:
+            - generic [ref=e123]: $67M
+            - generic [ref=e124]: quarterly
+          - generic [ref=e125]:
+            - generic [ref=e126]: 35d
+            - generic [ref=e127]: buffer
+          - generic [ref=e128]:
+            - generic [ref=e129]:
+              - img [ref=e130]
+              - text: Escalate
+            - generic [ref=e132]:
+              - generic [ref=e133]: High
+              - generic [ref=e135]: 91%
+              - generic [ref=e136]: SLA 24h
+        - button "Quanta Computer TW Operational · ERP Systems · Latitude 7450 +1 $42M quarterly 22d buffer Investigate High 88% SLA 24h" [ref=e137] [cursor=pointer]:
+          - generic [ref=e138]:
+            - generic [ref=e139]:
+              - generic [ref=e140]: Quanta Computer
+              - generic [ref=e141]: TW
+            - generic [ref=e142]:
+              - img [ref=e144]
+              - generic [ref=e148]: Operational · ERP Systems · Latitude 7450 +1
+          - generic [ref=e149]:
+            - generic [ref=e150]: $42M
+            - generic [ref=e151]: quarterly
+          - generic [ref=e152]:
+            - generic [ref=e153]: 22d
+            - generic [ref=e154]: buffer
+          - generic [ref=e155]:
+            - generic [ref=e156]:
+              - img [ref=e157]
+              - text: Investigate
+            - generic [ref=e160]:
+              - generic [ref=e161]: High
+              - generic [ref=e163]: 88%
+              - generic [ref=e164]: SLA 24h
+        - button "Wistron TW Financial · Revenue Consolidation · Latitude 7450 +1 $54M quarterly 42d buffer Escalate High 86% SLA 24h" [ref=e165] [cursor=pointer]:
+          - generic [ref=e166]:
+            - generic [ref=e167]:
+              - generic [ref=e168]: Wistron
+              - generic [ref=e169]: TW
+            - generic [ref=e170]:
+              - img [ref=e172]
+              - generic [ref=e174]: Financial · Revenue Consolidation · Latitude 7450 +1
+          - generic [ref=e175]:
+            - generic [ref=e176]: $54M
+            - generic [ref=e177]: quarterly
+          - generic [ref=e178]:
+            - generic [ref=e179]: 42d
+            - generic [ref=e180]: buffer
+          - generic [ref=e181]:
+            - generic [ref=e182]:
+              - img [ref=e183]
+              - text: Escalate
+            - generic [ref=e185]:
+              - generic [ref=e186]: High
+              - generic [ref=e188]: 86%
+              - generic [ref=e189]: SLA 24h
+        - button "Pegatron TW Compliance · Written Reports & PDFs · XPS 13 +1 $28M quarterly 90d buffer Investigate Medium 82% SLA 3d" [ref=e190] [cursor=pointer]:
+          - generic [ref=e191]:
+            - generic [ref=e192]:
+              - generic [ref=e193]: Pegatron
+              - generic [ref=e194]: TW
+            - generic [ref=e195]:
+              - img [ref=e197]
+              - generic [ref=e199]: Compliance · Written Reports & PDFs · XPS 13 +1
+          - generic [ref=e200]:
+            - generic [ref=e201]: $28M
+            - generic [ref=e202]: quarterly
+          - generic [ref=e203]:
+            - generic [ref=e204]: 90d
+            - generic [ref=e205]: buffer
+          - generic [ref=e206]:
+            - generic [ref=e207]:
+              - img [ref=e208]
+              - text: Investigate
+            - generic [ref=e211]:
+              - generic [ref=e212]: Medium
+              - generic [ref=e214]: 82%
+              - generic [ref=e215]: SLA 3d
+      - generic [ref=e217]:
+        - generic [ref=e218]: 10 matched · sorted by exposure and urgency
+        - generic [ref=e219]: Re-scored 4 min ago
+    - generic [ref=e221]:
+      - generic [ref=e222]:
+        - generic [ref=e223]:
+          - generic [ref=e224]:
+            - generic [ref=e225]: Decision required · R-001
+            - generic [ref=e226]:
+              - img [ref=e228]
+              - heading "Foxconn" [level=2] [ref=e231]
+              - generic [ref=e232]: TW
+          - button [ref=e233] [cursor=pointer]:
+            - img [ref=e234]
+        - generic [ref=e237]:
+          - generic [ref=e238]:
+            - generic [ref=e239]: Exposure
+            - generic [ref=e240]: $148M
+          - generic [ref=e241]:
+            - generic [ref=e242]: Impact
+            - generic [ref=e243]: 14d
+          - generic [ref=e244]:
+            - generic [ref=e245]: Confidence
+            - generic [ref=e246]: 94%
+        - generic [ref=e247]:
+          - generic [ref=e248]: Critical
+          - generic [ref=e250]: ·
+          - generic [ref=e251]: Geopolitical
+          - generic [ref=e252]: ·
+          - generic [ref=e253]:
+            - img [ref=e254]
+            - text: 94% confidence
+      - generic [ref=e256]:
+        - generic [ref=e257]: Prepared escalation packet
+        - generic [ref=e258]: Ready
+      - generic:
+        - generic [ref=e259]:
+          - generic [ref=e260]:
+            - generic [ref=e261]: What leadership needs to know
+            - paragraph [ref=e262]: Cross-strait military exercises announced near Foxconn's Kaohsiung assembly cluster, with shipping lane advisories issued by Taiwan MOTC. Carrier rerouting could delay outbound finished goods by 11–18 days at current inventory burn.
+          - generic [ref=e263]:
+            - img [ref=e264]
+            - generic [ref=e266]: Single-source server motherboard line + DDL geopolitical advisory + <20 day inventory buffer.
+        - generic [ref=e268]:
+          - generic [ref=e269]: Blast radius
+          - generic [ref=e270]:
+            - generic [ref=e271]:
+              - img [ref=e272]
+              - text: Products
+            - generic [ref=e276]: PowerEdge R760, PowerEdge XE9680, Precision 7960
+          - generic [ref=e277]:
+            - generic [ref=e278]: Alternative
+            - generic [ref=e284]:
+              - img [ref=e285]
+              - text: SINGLE SOURCE
+              - generic [ref=e287]: · qualification required
+          - generic [ref=e288]:
+            - generic [ref=e289]:
+              - img [ref=e290]
+              - text: Chain
+            - generic [ref=e296]:
+              - generic [ref=e297]:
+                - generic [ref=e298]: T1
+                - generic [ref=e299]: Foxconn (T1 assembly)
+              - img [ref=e301]
+              - generic [ref=e303]:
+                - generic [ref=e304]: T2
+                - generic [ref=e305]: Murata (T2 capacitors)
+              - img [ref=e307]
+              - generic [ref=e309]:
+                - generic [ref=e310]: RAW
+                - generic [ref=e311]: DRC tantalum (raw)
+          - generic [ref=e312]:
+            - generic [ref=e313]: Recommended decision
+            - generic [ref=e314]: Escalate — single-source supplier with $148M quarterly exposure and 14-day inventory buffer. Activate dual-source qualification with Quanta in parallel.
+          - generic [ref=e315]:
+            - button "Escalate" [ref=e316] [cursor=pointer]:
+              - img [ref=e317]
+              - text: Escalate
+            - button "Assign" [ref=e319] [cursor=pointer]:
+              - img [ref=e320]
+              - text: Assign
+  - button "Ask Assistant" [ref=e325] [cursor=pointer]:
+    - img [ref=e326]
+    - generic [ref=e328]: Ask Assistant

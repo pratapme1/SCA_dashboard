@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root { height: 100%; }
+body { 
+    background-color: #0b1120; 
+    color: #e2e8f0; 
+    font-family: 'Source Sans 3', sans-serif; 
+    overflow: hidden; 
+    height: 100vh; 
+    -webkit-font-smoothing: antialiased;
+}
+
+.executive-card { background-color: #111827; border: 1px solid #1f2937; }
+.nested-card { background-color: #0f172a; border: 1px solid #1e293b; }
+.glow-red { text-shadow: 0 0 10px rgba(248, 113, 113, 0.4); }
+.glow-gold { text-shadow: 0 0 12px rgba(212, 168, 67, 0.5); }
+.selected-row { border-left: 4px solid #f2c35b !important; background-color: rgba(212, 168, 67, 0.05) !important; box-shadow: inset 0 0 15px rgba(212, 168, 67, 0.05); }
+
+.scroll-container { overflow-y: auto; scrollbar-width: thin; scrollbar-color: #334155 transparent; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
+.director-banner { background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%); border-left: 4px solid #f2c35b; }
+.source-dot { width: 6px; height: 6px; border-radius: 50%; }
+.source-pill { background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(51, 65, 85, 0.5); }
+
+/* Pulse for live data-source dots */
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 0 currentColor; opacity: 1; }
+  50%      { box-shadow: 0 0 0 6px transparent; opacity: 0.6; }
+}
+.pulse-dot { animation: pulse-dot 2.4s ease-in-out infinite; }
+
+/* Slide-in for blast radius panel */
+@keyframes slide-in-right {
+  from { transform: translateX(24px); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+.slide-in { animation: slide-in-right 320ms cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* Severity chip palettes */
+.sev-crit { background: rgba(239,68,68,0.12); color: #ffb4ab; border: 1px solid rgba(239,68,68,0.35); }
+.sev-high { background: rgba(245,158,11,0.12); color: #f2c35b; border: 1px solid rgba(245,158,11,0.35); }
+.sev-med  { background: rgba(59,130,246,0.12); color: #adc6ff; border: 1px solid rgba(59,130,246,0.35); }
+.sev-low  { background: rgba(34,197,94,0.12); color: #aec6ff; border: 1px solid rgba(34,197,94,0.35); }
+
+/* Gold underline for section eyebrows */
+.eyebrow {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #f2c35b;
+  font-weight: 700;
+}
+
+@keyframes breathe { 0%,100% { opacity: 0.85; } 50% { opacity: 1; } }
+.breathe { animation: breathe 3.6s ease-in-out infinite; }
+
+.clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(242, 195, 91, 0.75);
+  outline-offset: 2px;
+}
