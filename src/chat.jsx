@@ -157,7 +157,7 @@ export function ChatAssistant({ dashboardRisks = risks }) {
         type="button"
         onClick={() => setOpen(true)}
         title="Ask the SCA assistant"
-        className={`assistant-launcher inline-flex fixed bottom-20 right-6 z-40 items-center gap-2 pl-3 pr-3.5 py-2.5 rounded-full bg-primary text-[#111827] font-bold text-[12px] shadow-lg shadow-primary/20 border border-primary/60 hover:scale-[1.02] active:scale-[0.99] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 ${open ? 'opacity-0 pointer-events-none' : ''}`}
+        className={`assistant-launcher inline-flex fixed bottom-[3px] right-[205px] z-40 h-[22px] items-center gap-1.5 pl-2 pr-2.5 rounded bg-[#111827]/95 text-primary font-bold text-[10px] shadow-md shadow-black/20 border border-primary/35 backdrop-blur hover:bg-primary/10 hover:border-primary/60 active:scale-[0.99] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 ${open ? 'opacity-0 pointer-events-none' : ''}`}
       >
         <Icon.Sparkles size={13} />
         <span>Ask Assistant</span>
