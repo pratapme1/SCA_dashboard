@@ -157,10 +157,11 @@ export function ChatAssistant({ dashboardRisks = risks }) {
         type="button"
         onClick={() => setOpen(true)}
         title="Ask the SCA assistant"
-        className={`assistant-launcher inline-flex fixed bottom-[3px] right-[205px] z-40 h-[22px] items-center gap-1.5 pl-2 pr-2.5 rounded bg-[#111827]/95 text-primary font-bold text-[10px] shadow-md shadow-black/20 border border-primary/35 backdrop-blur hover:bg-primary/10 hover:border-primary/60 active:scale-[0.99] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 ${open ? 'opacity-0 pointer-events-none' : ''}`}
+        aria-label="Ask Assistant"
+        className={`assistant-orb fixed bottom-5 right-5 z-40 grid h-12 w-12 place-items-center rounded-full text-white shadow-2xl active:scale-[0.98] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 ${open ? 'opacity-0 pointer-events-none' : ''}`}
       >
-        <Icon.Sparkles size={13} />
-        <span>Ask Assistant</span>
+        <span className="material-symbols-outlined relative z-10 text-[23px]">forum</span>
+        <span className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full bg-green-400 ring-2 ring-[#0b1120] animate-pulse"></span>
       </button>
 
       {/* Panel */}

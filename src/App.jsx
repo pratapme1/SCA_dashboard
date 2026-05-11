@@ -513,7 +513,16 @@ function DecisionBrief({ risk, assignee, escalation, onEscalateConfirm, onAssign
                   ))}
                 </div>
               </div>
-              <div className="flex gap-2 mt-1">
+              <div className="grid grid-cols-3 gap-2 mt-1">
+                {escalation ? (
+                  <div className="py-1.5 bg-gray-800 text-gray-500 text-[9px] font-bold rounded border border-gray-700 flex items-center justify-center gap-1 uppercase tracking-wider">
+                    <span className="material-symbols-outlined text-[12px]">check_circle</span> Escalated {escalation.assignee.avatar}
+                  </div>
+                ) : (
+                  <button onClick={openEscalate} className="py-1.5 bg-red-600 hover:bg-red-500 text-white text-[9px] font-bold rounded border border-red-500/60 flex items-center justify-center gap-1 uppercase tracking-wider transition-colors shadow-lg shadow-red-600/20">
+                    <span className="material-symbols-outlined text-[12px]">warning</span> Escalate VP
+                  </button>
+                )}
                 <button onClick={openAssign} className="flex-1 py-1.5 bg-gray-800 hover:bg-gray-700 text-white text-[9px] font-bold rounded border border-gray-700 flex items-center justify-center gap-1 uppercase tracking-wider transition-colors">
                   <span className="material-symbols-outlined text-[12px]">person_add</span> Assign Analyst
                 </button>
@@ -522,21 +531,6 @@ function DecisionBrief({ risk, assignee, escalation, onEscalateConfirm, onAssign
                 </button>
               </div>
             </div>
-          )}
-        </div>
-
-        {/* Primary Action Footer */}
-        <div className="p-3 bg-[#0f172a] border-t border-gray-800 shrink-0">
-          {escalation ? (
-            <div className="w-full py-1.5 bg-gray-800 text-gray-500 text-[10px] font-bold rounded flex items-center justify-center gap-1 uppercase tracking-widest cursor-default">
-              <span className="material-symbols-outlined text-[12px]">check_circle</span>
-              Escalated to {escalation.assignee.avatar}
-            </div>
-          ) : (
-            <button onClick={openEscalate} className="w-full py-1.5 bg-red-600 hover:bg-red-500 text-white text-[10px] font-bold rounded flex items-center justify-center gap-1 transition-all shadow-lg shadow-red-600/20 uppercase tracking-widest">
-              <span className="material-symbols-outlined text-[12px]">warning</span>
-              Escalate to Regional VP
-            </button>
           )}
         </div>
 
