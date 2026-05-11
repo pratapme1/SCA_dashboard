@@ -228,3 +228,16 @@ export const supplierDirectory = [
   { name: 'Asustek',           country: 'TW', tier: 'T1', spend: '$80M',  flagged: false },
   { name: 'Lenovo (OEM div.)', country: 'CN', tier: 'T1', spend: '$70M',  flagged: false },
 ];
+
+export const peopleDirectory = [
+  { id: 'p-001', name: 'Sarah Chen',     role: 'Senior Risk Analyst',  team: 'Operations',    avatar: 'SC' },
+  { id: 'p-002', name: 'M. Okafor',      role: 'Director of SCA',      team: 'Leadership',    avatar: 'MO' },
+  { id: 'p-003', name: 'A. Rivera',      role: 'CISO',                 team: 'Cybersecurity', avatar: 'AR' },
+  { id: 'p-004', name: 'D. Patel',       role: 'Operations Lead',      team: 'Operations',    avatar: 'DP' },
+  { id: 'p-005', name: 'L. Nakamura',    role: 'Compliance Officer',   team: 'Compliance',    avatar: 'LN' },
+  { id: 'p-006', name: 'V. Pratap Kumar', role: 'Risk Analyst',        team: 'Operations',    avatar: 'VP' },
+  { id: 'p-007', name: 'J. Williams',    role: 'Procurement Director', team: 'Finance',       avatar: 'JW' },
+  { id: 'p-008', name: 'K. Tanaka',      role: 'ESG Lead',             team: 'ESG',           avatar: 'KT' },
+  { id: 'p-009', name: 'R. Chen',        role: 'Cyber Analyst',        team: 'Cybersecurity', avatar: 'RC' },
+  { id: 'p-010', name: 'S. Patel',       role: 'Regional VP',          team: 'Leadership',    avatar: 'SP' },
+];

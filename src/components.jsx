@@ -197,18 +197,57 @@ export function SourceHealthPill({ label, status, title }) {
 }
 
 // ---------- Chain Visualizer ----------
+const tierMeta = [
+  { label: 'T1 ASSEMBLY',   color: 'border-red-500/40',   bg: 'bg-red-900/10', text: 'text-red-300',   dot: 'bg-red-400',  glow: 'shadow-[0_0_12px_rgba(248,113,113,0.15)]' },
+  { label: 'T2 COMPONENT',  color: 'border-amber-500/30',  bg: 'bg-amber-900/10',text: 'text-amber-300', dot: 'bg-amber-400',glow: '' },
+  { label: 'RAW MATERIAL',  color: 'border-sky-500/30',    bg: 'bg-sky-900/10',  text: 'text-sky-300',   dot: 'bg-sky-400',  glow: '' },
+];
+
 export function ChainViz({ chain }) {
   return (
-    <div className="flex items-center gap-1.5 mb-3">
-      {chain.map((c, i) => (
-        <React.Fragment key={i}>
-          <div className={`flex-1 bg-[#111827] border ${i === 0 ? 'border-red-900/50 shadow-[0_0_10px_rgba(248,113,113,0.1)]' : 'border-gray-800'} rounded p-1.5 text-center`}>
-            <span className="text-[7px] text-gray-500 block leading-tight mb-0.5">{i === 0 ? 'T1 ASSEMBLY' : i === 1 ? 'T2 COMPONENT' : 'RAW MATERIAL'}</span>
-            <span className="text-[10px] font-bold text-white leading-tight truncate block">{c}</span>
+    <div className="relative pl-6 py-0.5">
+      {/* Vertical connecting line */}
+      <div className="absolute left-[10px] top-3 bottom-3 w-px bg-gradient-to-b from-red-500/40 via-amber-500/30 to-sky-500/30"></div>
+
+      {chain.map((c, i) => {
+        const t = tierMeta[i] || tierMeta[tierMeta.length - 1];
+        const isCritical = i === 0;
+
+        return (
+          <div key={i} className="relative pb-3 last:pb-0">
+            {/* Timeline dot */}
+            <div className={`absolute -left-5 top-1.5 w-2 h-2 rounded-full ${t.dot} ${isCritical ? 'animate-pulse' : ''} ring-2 ring-[#0f172a] z-10 ${isCritical ? 'shadow-[0_0_8px_rgba(248,113,113,0.5)]' : ''}`}></div>
+
+            {/* Flow arrow between nodes */}
+            {i < chain.length - 1 && (
+              <div className="absolute -left-[18px] top-[16px] text-gray-600">
+                <span className="material-symbols-outlined text-[10px]">arrow_downward</span>
+              </div>
+            )}
+
+            {/* Node card */}
+            <div className={`rounded-lg border ${t.color} ${t.bg} ${isCritical ? t.glow : ''} p-2 transition-all hover:brightness-110`}>
+              <div className="flex items-center justify-between mb-0.5">
+                <span className={`text-[7px] font-bold uppercase tracking-[0.15em] ${t.text}`}>{t.label}</span>
+                {isCritical && <span className="text-[7px] font-bold text-red-400 uppercase tracking-wider bg-red-900/30 px-1 py-[1px] rounded">Critical Path</span>}
+              </div>
+              <div className="text-[11px] font-semibold text-white leading-tight">{c}</div>
+              {i === 0 && (
+                <div className="mt-1 flex items-center gap-1 text-[8px] text-gray-500">
+                  <span className="material-symbols-outlined text-[9px]">inventory_2</span>
+                  <span>Finished goods</span>
+                </div>
+              )}
+              {i === chain.length - 1 && (
+                <div className="mt-1 flex items-center gap-1 text-[8px] text-gray-500">
+                  <span className="material-symbols-outlined text-[9px]">mining</span>
+                  <span>Raw extraction</span>
+                </div>
+              )}
+            </div>
           </div>
-          {i < chain.length - 1 && <span className="material-symbols-outlined text-gray-700 text-[10px]">arrow_forward</span>}
-        </React.Fragment>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -231,6 +270,252 @@ export function Toast({ toast }) {
         </div>
       </div>
     </div>
+  );
+}
+
+// ---------- Modal ----------
+export function Modal({ open, onClose, title, icon, children, actions, size = 'md' }) {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  const widths = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-lg' };
+
+  return (
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4" role="dialog" aria-modal="true">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm modal-backdrop" onClick={onClose} />
+      <div className={`relative bg-[#111827] border border-gray-800 rounded-xl shadow-2xl w-full ${widths[size]} modal-content`}>
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-800">
+          <div className="flex items-center gap-2.5">
+            {icon || <span className="material-symbols-outlined text-primary text-lg">info</span>}
+            <h3 className="text-sm font-bold text-white">{title}</h3>
+          </div>
+          <button onClick={onClose} className="text-gray-500 hover:text-white p-1 rounded hover:bg-gray-800 transition-colors">
+            <span className="material-symbols-outlined text-lg">close</span>
+          </button>
+        </div>
+        <div className="p-5">{children}</div>
+        {actions && (
+          <div className="px-5 py-3.5 border-t border-gray-800 flex justify-end gap-2 bg-[#0f172a] rounded-b-xl">
+            {actions}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ---------- Person Picker ----------
+export function PersonPicker({ people, value, onChange, placeholder = 'Search people...', filterTeam }) {
+  const [q, setQ] = useState('');
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    function onDoc(e) { if (ref.current && !ref.current.contains(e.target)) setOpen(false); }
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, []);
+
+  const filtered = useMemo(() => {
+    let pool = people;
+    if (filterTeam) pool = pool.filter(p => p.team === filterTeam);
+    if (value) pool = pool.filter(p => p.id !== value.id);
+    const ql = q.trim().toLowerCase();
+    if (ql) pool = pool.filter(p => p.name.toLowerCase().includes(ql) || p.role.toLowerCase().includes(ql) || p.team.toLowerCase().includes(ql));
+    return pool.slice(0, 8);
+  }, [q, value, people, filterTeam]);
+
+  return (
+    <div ref={ref} className="relative">
+      {value ? (
+        <div className="flex items-center gap-2 bg-gray-900 border border-gray-700 rounded p-1.5">
+          <div className="w-5 h-5 rounded bg-primary/20 text-primary text-[8px] font-bold flex items-center justify-center">{value.avatar}</div>
+          <div className="flex-1 min-w-0">
+            <div className="text-[11px] font-semibold text-white leading-tight">{value.name}</div>
+            <div className="text-[8px] text-gray-500 leading-tight">{value.role}</div>
+          </div>
+          <button onClick={() => onChange(null)} className="text-gray-500 hover:text-white p-0.5">
+            <span className="material-symbols-outlined text-[14px]">close</span>
+          </button>
+        </div>
+      ) : (
+        <div className="relative">
+          <span className="material-symbols-outlined absolute left-2 top-1.5 text-gray-500 text-[14px]">search</span>
+          <input
+            className="w-full bg-gray-900 border border-gray-700 rounded py-1 pl-7 pr-2 text-[11px] text-gray-300 placeholder-gray-600 focus:outline-none focus:border-primary/50"
+            placeholder={placeholder}
+            value={q}
+            onChange={(e) => { setQ(e.target.value); setOpen(true); }}
+            onFocus={() => setOpen(true)}
+          />
+        </div>
+      )}
+      {open && filtered.length > 0 && (
+        <div className="absolute top-full left-0 right-0 mt-1 z-[60] bg-gray-900 border border-gray-700 rounded shadow-2xl overflow-hidden">
+          {filtered.map(p => (
+            <button
+              key={p.id}
+              onClick={() => { onChange(p); setQ(''); setOpen(false); }}
+              className="w-full text-left px-3 py-2 text-[11px] text-gray-300 hover:bg-gray-800 border-b border-gray-800 last:border-0 flex items-center gap-2"
+            >
+              <div className="w-6 h-6 rounded bg-gray-800 text-gray-400 text-[9px] font-bold flex items-center justify-center shrink-0">{p.avatar}</div>
+              <div className="min-w-0 flex-1">
+                <div className="text-[11px] font-semibold text-white leading-tight">{p.name}</div>
+                <div className="text-[8px] text-gray-500">{p.role} · {p.team}</div>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------- Escalate Modal ----------
+export function EscalateModal({ open, risk, people, onClose, onConfirm }) {
+  const [assignee, setAssignee] = useState(null);
+  const [reason, setReason] = useState('');
+  const [urgency, setUrgency] = useState('high');
+
+  if (!risk) return null;
+
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="Escalate Risk"
+      icon={<span className="material-symbols-outlined text-red-400 text-lg">warning</span>}
+      size="lg"
+      actions={
+        <>
+          <button onClick={onClose} className="px-3 py-1.5 text-[10px] font-bold text-gray-400 hover:text-white border border-gray-700 rounded hover:bg-gray-800 uppercase tracking-wider transition-colors">Cancel</button>
+          <button
+            onClick={() => { if (assignee) onConfirm(risk, { assignee, reason, urgency }); onClose(); }}
+            disabled={!assignee}
+            className={`px-3 py-1.5 text-[10px] font-bold rounded uppercase tracking-wider transition-all ${
+              assignee ? 'bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-600/20' : 'bg-gray-800 text-gray-600 cursor-not-allowed'
+            }`}
+          >
+            Confirm Escalation
+          </button>
+        </>
+      }
+    >
+      <div className="space-y-4">
+        <div className="bg-gray-900/50 rounded-lg p-2.5 border border-gray-800">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[11px] font-bold text-white">{risk.supplier}</span>
+            <span className="text-[8px] font-bold text-red-400 bg-red-900/30 px-1.5 py-0.5 rounded-full">{risk.severity}</span>
+          </div>
+          <p className="text-[10px] text-gray-400 leading-tight">{risk.category} &middot; {risk.revenueExposure} exposure &middot; {risk.daysToImpact ? `${risk.daysToImpact}d to impact` : 'No timeline'}</p>
+        </div>
+
+        <div>
+          <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest block mb-1.5">Escalate To</label>
+          <PersonPicker people={people} value={assignee} onChange={setAssignee} placeholder="Search by name, role, or team..." filterTeam="Leadership" />
+        </div>
+
+        <div>
+          <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest block mb-1.5">Urgency</label>
+          <div className="flex gap-2">
+            {['high', 'medium', 'low'].map((u) => (
+              <button key={u} onClick={() => setUrgency(u)} className={`flex-1 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded border transition-colors ${
+                urgency === u ? 'bg-red-900/30 border-red-700 text-red-400' : 'bg-gray-900 border-gray-700 text-gray-500 hover:text-gray-300'
+              }`}>
+                {u === 'high' ? 'High' : u === 'medium' ? 'Medium' : 'Low'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest block mb-1.5">Reason</label>
+          <textarea
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-[11px] text-gray-300 placeholder-gray-600 focus:outline-none focus:border-primary/50 resize-none"
+            rows={2}
+            placeholder="Brief escalation context..."
+          />
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+// ---------- Assign Modal ----------
+export function AssignModal({ open, risk, people, onClose, onConfirm }) {
+  const [selectedTeam, setSelectedTeam] = useState('');
+  const [assignee, setAssignee] = useState(null);
+  const [notes, setNotes] = useState('');
+
+  const teams = [...new Set(people.map(p => p.team))];
+
+  if (!risk) return null;
+
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="Assign to Analyst"
+      icon={<span className="material-symbols-outlined text-sky-400 text-lg">person_add</span>}
+      size="lg"
+      actions={
+        <>
+          <button onClick={onClose} className="px-3 py-1.5 text-[10px] font-bold text-gray-400 hover:text-white border border-gray-700 rounded hover:bg-gray-800 uppercase tracking-wider transition-colors">Cancel</button>
+          <button
+            onClick={() => { if (assignee) onConfirm(risk, { assignee, team: selectedTeam, notes }); onClose(); }}
+            disabled={!assignee}
+            className={`px-3 py-1.5 text-[10px] font-bold rounded uppercase tracking-wider transition-all ${
+              assignee ? 'bg-sky-600 hover:bg-sky-500 text-white shadow-lg shadow-sky-600/20' : 'bg-gray-800 text-gray-600 cursor-not-allowed'
+            }`}
+          >
+            Assign
+          </button>
+        </>
+      }
+    >
+      <div className="space-y-4">
+        <div className="bg-gray-900/50 rounded-lg p-2.5 border border-gray-800">
+          <span className="text-[11px] font-bold text-white">{risk.supplier}</span>
+          <p className="text-[9px] text-gray-400 mt-0.5">{risk.category} &middot; {risk.products.slice(0, 2).join(', ')}</p>
+        </div>
+
+        <div>
+          <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest block mb-1.5">Team</label>
+          <select
+            value={selectedTeam}
+            onChange={(e) => { setSelectedTeam(e.target.value); setAssignee(null); }}
+            className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-[11px] text-gray-300 focus:outline-none focus:border-primary/50"
+          >
+            <option value="">All teams</option>
+            {teams.map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
+        </div>
+
+        <div>
+          <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest block mb-1.5">Assign To</label>
+          <PersonPicker people={people} value={assignee} onChange={setAssignee} placeholder="Search by name, role, or team..." filterTeam={selectedTeam || undefined} />
+        </div>
+
+        <div>
+          <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest block mb-1.5">Notes (optional)</label>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-[11px] text-gray-300 placeholder-gray-600 focus:outline-none focus:border-primary/50 resize-none"
+            rows={2}
+            placeholder="Assignment context..."
+          />
+        </div>
+      </div>
+    </Modal>
   );
 }
 

@@ -1,10 +1,10 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Icon } from './icons';
-import { dataSources, categories, risks, supplierDirectory } from './data';
+import { dataSources, categories, risks, supplierDirectory, peopleDirectory } from './data';
 import {
   SevPill, StatusDot, Confidence, ActionPill, StatusPill,
   Card, GlobalMetricsSummary, Tabs, EmptyState, SupplierSearch, AIAnalyzeButton,
-  SourceHealthPill, ChainViz, Toast
+  SourceHealthPill, ChainViz, Toast, PersonPicker
 } from './components';
 import { ChatAssistant } from './chat';
 
@@ -65,6 +65,16 @@ function RiskQueue({ riskRows, selectedId, onSelect, supplierFilter, setSupplier
     if (filter === 'Critical') out = out.filter((r) => r.severity === 'Critical');
     return out;
   }, [riskRows, supplierFilter, filter]);
+  const visibleRows = filtered.slice(0, 7);
+
+  const categoryIcon = (icon) => ({
+    Globe: 'public',
+    Package: 'factory',
+    Shield: 'security',
+    DollarSign: 'payments',
+    Cpu: 'memory',
+    Leaf: 'eco',
+  }[icon] || 'info');
 
   return (
     <Card 
@@ -78,9 +88,9 @@ function RiskQueue({ riskRows, selectedId, onSelect, supplierFilter, setSupplier
       }
       className="h-full"
     >
-      <div className="scroll-container flex-grow">
+      <div className="no-scroll-container flex-grow">
         <table className="w-full text-left border-collapse">
-          <thead className="sticky top-0 bg-[#0f172a] border-b border-gray-800 z-10">
+          <thead className="bg-[#0f172a] border-b border-gray-800 z-10">
             <tr className="text-[8px] text-gray-500 uppercase tracking-widest font-bold">
               <th className="px-3 py-2">Supplier & Product Focus</th>
               <th className="px-3 py-2">Risk Category</th>
@@ -90,7 +100,7 @@ function RiskQueue({ riskRows, selectedId, onSelect, supplierFilter, setSupplier
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-800/50">
-            {filtered.map((r) => {
+            {visibleRows.map((r) => {
               const isActive = selectedId === r.id;
               const cat = categories[r.category];
               return (
@@ -99,9 +109,9 @@ function RiskQueue({ riskRows, selectedId, onSelect, supplierFilter, setSupplier
                   onClick={() => onSelect(r.id)}
                   className={`cursor-pointer transition-all duration-200 hover:bg-gray-800/30 ${isActive ? 'selected-row' : ''}`}
                 >
-                  <td className="px-3 py-2.5">
+                  <td className="px-3 py-1.5">
                     <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded border border-gray-700 flex items-center justify-center bg-gray-800 text-white font-bold text-[9px]">
+                      <div className="w-6 h-6 rounded border border-gray-700 flex items-center justify-center bg-gray-800 text-white font-bold text-[8px]">
                         {r.supplier.split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase()}
                       </div>
                       <div>
@@ -115,21 +125,21 @@ function RiskQueue({ riskRows, selectedId, onSelect, supplierFilter, setSupplier
                       </div>
                     </div>
                   </td>
-                  <td className="px-3 py-2.5">
+                  <td className="px-3 py-1.5">
                     <div className="flex items-center gap-1 text-gray-300">
-                      <span className="material-symbols-outlined text-sm" style={{ color: cat.tint.replace('text-', '') }}>
-                        {cat.icon === 'Globe' ? 'public' : cat.icon === 'Package' ? 'factory' : cat.icon === 'Shield' ? 'security' : cat.icon === 'DollarSign' ? 'payments' : 'info'}
+                      <span className={`material-symbols-outlined text-sm ${cat.tint}`}>
+                        {categoryIcon(cat.icon)}
                       </span>
                       <span className="text-[11px]">{cat.label}</span>
                     </div>
                   </td>
-                  <td className="px-3 py-2.5">
+                  <td className="px-3 py-1.5">
                     <SevPill level={r.severity} />
                   </td>
-                  <td className="px-3 py-2.5">
+                  <td className="px-3 py-1.5">
                     <Confidence value={r.confidence} />
                   </td>
-                  <td className="px-3 py-2.5 text-right">
+                  <td className="px-3 py-1.5 text-right">
                     <ActionPill action={r.action} />
                   </td>
                 </tr>
@@ -142,7 +152,7 @@ function RiskQueue({ riskRows, selectedId, onSelect, supplierFilter, setSupplier
         )}
       </div>
       <div className="p-2 bg-[#0f172a] border-t border-gray-800 flex justify-between items-center text-[8px] text-gray-500 font-bold tracking-widest shrink-0">
-        <span>{filtered.length} OF {riskRows.length} RISKS FILTERED</span>
+        <span>{visibleRows.length} OF {filtered.length} MATCHED · {riskRows.length} TOTAL</span>
         <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[9px]">update</span> LAST UPDATED 4 MIN AGO</span>
       </div>
     </Card>
@@ -150,8 +160,25 @@ function RiskQueue({ riskRows, selectedId, onSelect, supplierFilter, setSupplier
 }
 
 // ---------- Decision Brief ----------
-function DecisionBrief({ risk, onClose, onEscalate, onAssign, onMonitor, onDismiss }) {
+function DecisionBrief({ risk, assignee, escalation, onEscalateConfirm, onAssignConfirm, onMonitor }) {
   const [activeTab, setActiveTab] = useState('impact');
+  const [overlay, setOverlay] = useState(null);
+
+  // Escalate form state
+  const [escTarget, setEscTarget] = useState(null);
+  const [escUrgency, setEscUrgency] = useState('high');
+  const [escReason, setEscReason] = useState('');
+
+  // Assign form state
+  const [assignTeam, setAssignTeam] = useState('');
+  const [assignTarget, setAssignTarget] = useState(null);
+  const [assignNotes, setAssignNotes] = useState('');
+
+  const teams = [...new Set(peopleDirectory.map(p => p.team))];
+
+  const openEscalate = () => { setEscTarget(null); setEscUrgency('high'); setEscReason(''); setOverlay('esc'); };
+  const openAssign = () => { setAssignTeam(''); setAssignTarget(null); setAssignNotes(''); setOverlay('assign'); };
+  const closeOverlay = () => setOverlay(null);
 
   if (!risk) return (
     <Card isExecutive={false} className="h-full flex items-center justify-center text-center p-8">
@@ -172,12 +199,26 @@ function DecisionBrief({ risk, onClose, onEscalate, onAssign, onMonitor, onDismi
 
   return (
     <div className="flex flex-col h-full gap-3 animate-in fade-in duration-300">
-      <Card isExecutive={true} className="flex-grow flex flex-col shadow-2xl border-primary/20">
+      <Card isExecutive={true} className="relative flex-grow flex flex-col shadow-2xl border-primary/20">
         {/* Detail Header */}
         <div className="p-3 bg-gradient-to-br from-[#1e293b] to-[#111827] border-b border-gray-800 shrink-0">
           <div className="flex justify-between items-start mb-1.5">
             <span className="text-[8px] text-primary uppercase tracking-[0.2em] font-bold">Risk Assessment · {risk.id.toUpperCase()}</span>
-            <span className="px-1.5 py-0.5 bg-red-900/30 border border-red-800/50 text-red-400 text-[8px] font-bold rounded-full">{risk.severity.toUpperCase()}</span>
+            <div className="flex items-center gap-1.5">
+              {assignee && (
+                <span className="inline-flex items-center gap-1 px-1.5 py-[1px] rounded-full bg-sky-900/40 border border-sky-700/40 text-sky-300 text-[8px] font-bold uppercase tracking-wider" title={`Assigned to ${assignee.name}`}>
+                  <span className="material-symbols-outlined text-[9px]">person</span>
+                  {assignee.avatar}
+                </span>
+              )}
+              {escalation && (
+                <span className="inline-flex items-center gap-1 px-1.5 py-[1px] rounded-full bg-red-900/40 border border-red-700/40 text-red-300 text-[8px] font-bold uppercase tracking-wider" title={`Escalated to ${escalation.assignee.name} (${escalation.urgency} urgency)`}>
+                  <span className="material-symbols-outlined text-[9px]">warning</span>
+                  ESC {escalation.assignee.avatar}
+                </span>
+              )}
+              <span className="px-1.5 py-[1px] bg-red-900/30 border border-red-800/50 text-red-400 text-[8px] font-bold rounded-full">{risk.severity.toUpperCase()}</span>
+            </div>
           </div>
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded bg-gray-900 border border-gray-700 flex items-center justify-center">
@@ -200,7 +241,7 @@ function DecisionBrief({ risk, onClose, onEscalate, onAssign, onMonitor, onDismi
         <Tabs tabs={tabs} active={activeTab} onChange={setActiveTab} />
 
         {/* Tab Content */}
-        <div className="p-3 scroll-container flex-grow">
+        <div className="p-3 no-scroll-container flex-grow">
           {activeTab === 'impact' && (
             <div className="flex flex-col gap-3 slide-in">
               <div className="grid grid-cols-2 gap-2">
@@ -267,7 +308,7 @@ function DecisionBrief({ risk, onClose, onEscalate, onAssign, onMonitor, onDismi
                 </div>
               </div>
               <div className="flex gap-2 mt-1">
-                <button onClick={() => onAssign(risk)} className="flex-1 py-1.5 bg-gray-800 hover:bg-gray-700 text-white text-[9px] font-bold rounded border border-gray-700 flex items-center justify-center gap-1 uppercase tracking-wider transition-colors">
+                <button onClick={openAssign} className="flex-1 py-1.5 bg-gray-800 hover:bg-gray-700 text-white text-[9px] font-bold rounded border border-gray-700 flex items-center justify-center gap-1 uppercase tracking-wider transition-colors">
                   <span className="material-symbols-outlined text-[12px]">person_add</span> Assign Analyst
                 </button>
                 <button onClick={() => onMonitor(risk)} className="flex-1 py-1.5 bg-gray-800 hover:bg-gray-700 text-white text-[9px] font-bold rounded border border-gray-700 flex items-center justify-center gap-1 uppercase tracking-wider transition-colors">
@@ -280,14 +321,104 @@ function DecisionBrief({ risk, onClose, onEscalate, onAssign, onMonitor, onDismi
 
         {/* Primary Action Footer */}
         <div className="p-3 bg-[#0f172a] border-t border-gray-800 shrink-0">
-          <button 
-            onClick={() => onEscalate(risk)}
-            className="w-full py-1.5 bg-primary hover:bg-yellow-500 text-on-primary text-[10px] font-bold rounded flex items-center justify-center gap-1 transition-all shadow-lg shadow-primary/20 uppercase tracking-widest"
-          >
-            <span className="material-symbols-outlined text-[12px]">warning</span>
-            Escalate to Regional VP
-          </button>
+          {escalation ? (
+            <div className="w-full py-1.5 bg-gray-800 text-gray-500 text-[10px] font-bold rounded flex items-center justify-center gap-1 uppercase tracking-widest cursor-default">
+              <span className="material-symbols-outlined text-[12px]">check_circle</span>
+              Escalated to {escalation.assignee.avatar}
+            </div>
+          ) : (
+            <button onClick={openEscalate} className="w-full py-1.5 bg-red-600 hover:bg-red-500 text-white text-[10px] font-bold rounded flex items-center justify-center gap-1 transition-all shadow-lg shadow-red-600/20 uppercase tracking-widest">
+              <span className="material-symbols-outlined text-[12px]">warning</span>
+              Escalate to Regional VP
+            </button>
+          )}
         </div>
+
+        {/* Card-scoped overlay for Escalate */}
+        {overlay === 'esc' && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true">
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px] rounded-lg" onClick={closeOverlay}></div>
+            <div className="relative bg-[#111827] border border-gray-800 rounded-xl shadow-2xl w-full max-w-sm modal-content">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-red-400 text-lg">warning</span>
+                  <h3 className="text-sm font-bold text-white">Escalate Risk</h3>
+                </div>
+                <button onClick={closeOverlay} className="text-gray-500 hover:text-white p-1 rounded hover:bg-gray-800 transition-colors">
+                  <span className="material-symbols-outlined text-lg">close</span>
+                </button>
+              </div>
+              <div className="p-4 space-y-3">
+                <div className="bg-gray-900/50 rounded-lg p-2.5 border border-gray-800">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[11px] font-bold text-white">{risk.supplier}</span>
+                    <span className="text-[8px] text-red-400 bg-red-900/30 px-1.5 py-0.5 rounded-full">{risk.severity}</span>
+                  </div>
+                  <p className="text-[10px] text-gray-400">{risk.category} &middot; {risk.revenueExposure}</p>
+                </div>
+                <PersonPicker people={peopleDirectory} value={escTarget} onChange={setEscTarget} placeholder="Who to escalate to..." filterTeam="Leadership" />
+                {escTarget && (
+                  <>
+                    <div className="flex gap-2">
+                      {['high', 'medium', 'low'].map(u => (
+                        <button key={u} onClick={() => setEscUrgency(u)} className={`flex-1 py-1 text-[8px] font-bold uppercase tracking-wider rounded border transition-colors ${escUrgency === u ? 'bg-red-900/30 border-red-700 text-red-400' : 'bg-gray-900 border-gray-700 text-gray-500 hover:text-gray-300'}`}>{u}</button>
+                      ))}
+                    </div>
+                    <textarea value={escReason} onChange={e => setEscReason(e.target.value)} className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-[10px] text-gray-300 placeholder-gray-600 focus:outline-none focus:border-primary/50 resize-none" rows={2} placeholder="Reason..." />
+                  </>
+                )}
+              </div>
+              <div className="px-4 py-3 border-t border-gray-800 flex justify-end gap-2 bg-[#0f172a] rounded-b-xl">
+                <button onClick={closeOverlay} className="px-3 py-1.5 text-[9px] font-bold text-gray-400 hover:text-white border border-gray-700 rounded hover:bg-gray-800 uppercase tracking-wider">Cancel</button>
+                <button
+                  onClick={() => { onEscalateConfirm(risk, { assignee: escTarget, urgency: escUrgency, reason: escReason }); closeOverlay(); }}
+                  disabled={!escTarget}
+                  className={`px-3 py-1.5 text-[9px] font-bold rounded uppercase tracking-wider ${escTarget ? 'bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-600/20' : 'bg-gray-800 text-gray-600 cursor-not-allowed'}`}
+                >Confirm Escalation</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Card-scoped overlay for Assign */}
+        {overlay === 'assign' && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true">
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px] rounded-lg" onClick={closeOverlay}></div>
+            <div className="relative bg-[#111827] border border-gray-800 rounded-xl shadow-2xl w-full max-w-sm modal-content">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-sky-400 text-lg">person_add</span>
+                  <h3 className="text-sm font-bold text-white">Assign Analyst</h3>
+                </div>
+                <button onClick={closeOverlay} className="text-gray-500 hover:text-white p-1 rounded hover:bg-gray-800 transition-colors">
+                  <span className="material-symbols-outlined text-lg">close</span>
+                </button>
+              </div>
+              <div className="p-4 space-y-3">
+                <div className="bg-gray-900/50 rounded-lg p-2.5 border border-gray-800">
+                  <span className="text-[11px] font-bold text-white">{risk.supplier}</span>
+                  <p className="text-[9px] text-gray-400 mt-0.5">{risk.category} &middot; {risk.products.slice(0, 2).join(', ')}</p>
+                </div>
+                <select value={assignTeam} onChange={e => { setAssignTeam(e.target.value); setAssignTarget(null); }} className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-[10px] text-gray-300 focus:outline-none focus:border-primary/50">
+                  <option value="">All teams</option>
+                  {teams.map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
+                <PersonPicker people={peopleDirectory} value={assignTarget} onChange={setAssignTarget} placeholder="Assign to..." filterTeam={assignTeam || undefined} />
+                {assignTarget && (
+                  <textarea value={assignNotes} onChange={e => setAssignNotes(e.target.value)} className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-[10px] text-gray-300 placeholder-gray-600 focus:outline-none focus:border-primary/50 resize-none" rows={2} placeholder="Notes..." />
+                )}
+              </div>
+              <div className="px-4 py-3 border-t border-gray-800 flex justify-end gap-2 bg-[#0f172a] rounded-b-xl">
+                <button onClick={closeOverlay} className="px-3 py-1.5 text-[9px] font-bold text-gray-400 hover:text-white border border-gray-700 rounded hover:bg-gray-800 uppercase tracking-wider">Cancel</button>
+                <button
+                  onClick={() => { onAssignConfirm(risk, { assignee: assignTarget, team: assignTeam, notes: assignNotes }); closeOverlay(); }}
+                  disabled={!assignTarget}
+                  className={`px-3 py-1.5 text-[9px] font-bold rounded uppercase tracking-wider ${assignTarget ? 'bg-sky-600 hover:bg-sky-500 text-white shadow-lg shadow-sky-600/20' : 'bg-gray-800 text-gray-600 cursor-not-allowed'}`}
+                >Assign</button>
+              </div>
+            </div>
+          </div>
+        )}
       </Card>
     </div>
   );
@@ -299,24 +430,14 @@ export default function App() {
   const [supplierFilter, setSupplierFilter] = useState([]);
   const [aiLoading, setAiLoading] = useState(false);
   const [toast, setToast] = useState(null);
+  const [assignments, setAssignments] = useState({});
+  const [escalations, setEscalations] = useState({});
 
-  // Derived data
   const critCount = risks.filter(r => r.severity === 'Critical').length;
   const highCount = risks.filter(r => r.severity === 'High').length;
   const selectedRisk = useMemo(() => risks.find(r => r.id === selectedId), [selectedId]);
 
-  const handleAIAnalyze = () => {
-    if (!supplierFilter.length) return;
-    setAiLoading(true);
-    setTimeout(() => {
-      setAiLoading(false);
-      setToast({
-        title: "Intelligence Refresh Complete",
-        body: `Re-scored ${supplierFilter.length} suppliers against latest DDL and ERP feeds.`,
-        meta: "May 10 · 11:42 · 9 sources synced"
-      });
-    }, 1500);
-  };
+  const showToast = (title, body, meta) => setToast({ title, body, meta });
 
   useEffect(() => {
     if (toast) {
@@ -325,11 +446,37 @@ export default function App() {
     }
   }, [toast]);
 
+  const handleAIAnalyze = () => {
+    if (!supplierFilter.length) return;
+    setAiLoading(true);
+    setTimeout(() => {
+      setAiLoading(false);
+      showToast('Intelligence Refresh Complete', `Re-scored ${supplierFilter.length} suppliers against latest DDL and ERP feeds.`, 'May 10 · 11:42 · 9 sources synced');
+    }, 1500);
+  };
+
+  const handleEscalate = (risk, opts) => {
+    setEscalations(prev => ({ ...prev, [risk.id]: opts }));
+    showToast(
+      `Escalated: ${risk.supplier}`,
+      `${opts.assignee.name} notified${opts.reason ? ` — "${opts.reason.slice(0, 80)}${opts.reason.length > 80 ? '...' : ''}"` : ''}.`,
+      `Urgency: ${opts.urgency} · Audit trail updated`
+    );
+  };
+
+  const handleAssign = (risk, opts) => {
+    setAssignments(prev => ({ ...prev, [risk.id]: opts.assignee }));
+    showToast(
+      `Assigned: ${risk.supplier}`,
+      `Assigned to ${opts.assignee.name} (${opts.team || opts.assignee.team}) for triage.`,
+      'Ticket #SCA-992 created'
+    );
+  };
+
   return (
     <div className="flex flex-col h-screen bg-[#0b1120] text-gray-100 overflow-hidden">
       <TopBar risks={risks} />
       
-      {/* Metrics Summary Row */}
       <GlobalMetricsSummary 
         totalSuppliers="1,247" 
         activeRisks={risks.length} 
@@ -338,9 +485,7 @@ export default function App() {
         efficiency="4.2" 
       />
 
-      {/* Main Dashboard Grid */}
       <main className="flex-grow flex gap-3 p-3 overflow-hidden">
-        {/* Master: Risk Queue (55%) */}
         <div className="w-[55%] h-full">
           <RiskQueue 
             riskRows={risks} 
@@ -353,18 +498,19 @@ export default function App() {
           />
         </div>
 
-        {/* Detail: Blast Radius & Action (45%) */}
         <div className="w-[45%] h-full">
           <DecisionBrief 
+            key={selectedRisk?.id || 'empty'}
             risk={selectedRisk}
-            onEscalate={(r) => setToast({ title: `Escalated ${r.supplier}`, body: "Regional VP has been notified via Slack + Email.", meta: "Audit trail updated" })}
-            onAssign={(r) => setToast({ title: `Assigned ${r.supplier}`, body: "Ops team assigned to triage capacity gap.", meta: "Ticket #SCA-992 created" })}
-            onMonitor={(r) => setToast({ title: `Monitoring ${r.supplier}`, body: "Added to high-priority watch list.", meta: "Weekly refresh active" })}
+            assignee={assignments[selectedRisk?.id]}
+            escalation={escalations[selectedRisk?.id]}
+            onEscalateConfirm={handleEscalate}
+            onAssignConfirm={handleAssign}
+            onMonitor={(r) => showToast(`Monitoring ${r.supplier}`, 'Added to high-priority watch list.', 'Weekly refresh active')}
           />
         </div>
       </main>
 
-      {/* Status Footer */}
       <footer className="h-7 bg-[#0b1120] border-t border-gray-800 flex items-center justify-between px-4 shrink-0 relative z-10">
         <div className="flex items-center gap-3">
           <span className="font-mono text-[7px] text-gray-500 tracking-widest uppercase">Proprietary Director View · Dell SCA Team Discovery 2026</span>
