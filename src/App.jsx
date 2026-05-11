@@ -482,7 +482,6 @@ export default function App() {
         activeRisks={risks.length} 
         critCount={critCount} 
         highCount={highCount} 
-        efficiency="4.2" 
       />
 
       <main className="flex-grow flex gap-3 p-3 overflow-hidden">

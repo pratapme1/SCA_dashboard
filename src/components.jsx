@@ -87,11 +87,11 @@ export function Card({ title, eyebrow, action, children, className = '', isExecu
 }
 
 // ---------- Global Metrics Summary ----------
-export function GlobalMetricsSummary({ totalSuppliers, activeRisks, critCount, highCount, efficiency }) {
+export function GlobalMetricsSummary({ totalSuppliers, activeRisks, critCount, highCount }) {
   return (
     <div className="h-[60px] bg-[#111827] border-b border-gray-800 flex items-center px-4 shrink-0">
       <div className="flex items-center justify-between w-full">
-        <div className="flex gap-6">
+        <div className="flex gap-8">
           <div className="flex flex-col">
             <span className="text-[8px] text-gray-500 uppercase tracking-widest font-bold mb-0.5">Total Suppliers</span>
             <div className="flex items-baseline gap-1.5">
@@ -109,26 +109,9 @@ export function GlobalMetricsSummary({ totalSuppliers, activeRisks, critCount, h
               </div>
             </div>
           </div>
-          <div className="flex flex-col">
-            <span className="text-[8px] text-gray-500 uppercase tracking-widest font-bold mb-0.5">Analyst Efficiency</span>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-lg font-bold text-primary leading-none">{efficiency} hr</span>
-              <span className="text-[9px] text-green-500 font-medium">+52% saved</span>
-            </div>
-          </div>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="h-6 w-px bg-gray-800"></div>
-          <div className="flex flex-col items-end">
-            <span className="text-[8px] text-gray-500 uppercase tracking-widest font-bold mb-1">Risk Posture: <span className="text-white">MODERATE</span></span>
-            <div className="flex gap-1">
-              <div className="h-1 w-6 bg-primary rounded-full"></div>
-              <div className="h-1 w-6 bg-primary rounded-full"></div>
-              <div className="h-1 w-6 bg-primary rounded-full"></div>
-              <div className="h-1 w-6 bg-gray-700 rounded-full"></div>
-              <div className="h-1 w-6 bg-gray-700 rounded-full"></div>
-            </div>
-          </div>
+        <div className="text-[8px] text-gray-500 uppercase tracking-widest font-bold">
+          Ranked by severity, confidence, and product exposure
         </div>
       </div>
     </div>
