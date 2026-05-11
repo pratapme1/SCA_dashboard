@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Icon } from './icons';
-import { dataSources, categories, risks, supplierDirectory, peopleDirectory } from './data';
+import { dataSources, categories, risks as seedRisks, supplierDirectory, peopleDirectory } from './data';
 import {
   SevPill, StatusDot, Confidence, ActionPill, StatusPill,
   Card, GlobalMetricsSummary, Tabs, EmptyState, SupplierSearch, AIAnalyzeButton,
@@ -256,10 +256,20 @@ function RiskQueue({ riskRows, selectedId, onSelect, supplierFilter, setSupplier
   const [filter, setFilter] = useState('All');
 
   const filtered = useMemo(() => {
+    const severityRank = { Critical: 4, High: 3, Medium: 2, Low: 1 };
+    const exposureValue = (risk) => Number(String(risk.revenueExposure || '').replace(/[^0-9.]/g, '')) || 0;
     let out = riskRows.filter((r) => !r.dismissed);
     if (supplierFilter.length) out = out.filter((r) => supplierFilter.includes(r.supplier));
     if (filter === 'Critical') out = out.filter((r) => r.severity === 'Critical');
-    return out;
+    return [...out].sort((a, b) => {
+      const severityDelta = (severityRank[b.severity] || 0) - (severityRank[a.severity] || 0);
+      if (severityDelta) return severityDelta;
+      const impactDelta = (a.daysToImpact || 999) - (b.daysToImpact || 999);
+      if (impactDelta) return impactDelta;
+      const exposureDelta = exposureValue(b) - exposureValue(a);
+      if (exposureDelta) return exposureDelta;
+      return b.confidence - a.confidence;
+    });
   }, [riskRows, supplierFilter, filter]);
   const visibleRows = filtered.slice(0, 7);
 
@@ -279,7 +289,7 @@ function RiskQueue({ riskRows, selectedId, onSelect, supplierFilter, setSupplier
       action={
         <div className="flex gap-2">
           <SupplierSearch directory={supplierDirectory} value={supplierFilter} onChange={setSupplierFilter} />
-          <AIAnalyzeButton targets={supplierFilter} onAnalyze={onAIAnalyze} loading={aiLoading} />
+          <AIAnalyzeButton targets={supplierFilter} selectedTarget={riskRows.find(r => r.id === selectedId)?.supplier} onAnalyze={onAIAnalyze} loading={aiLoading} />
         </div>
       }
       className="h-full"
@@ -623,6 +633,7 @@ function DecisionBrief({ risk, assignee, escalation, onEscalateConfirm, onAssign
 // ---------- Main App Component ----------
 export default function App() {
   const [view, setView] = useState('flow');
+  const [riskRows, setRiskRows] = useState(seedRisks);
   const [selectedId, setSelectedId] = useState('r-001');
   const [supplierFilter, setSupplierFilter] = useState([]);
   const [aiLoading, setAiLoading] = useState(false);
@@ -630,9 +641,10 @@ export default function App() {
   const [assignments, setAssignments] = useState({});
   const [escalations, setEscalations] = useState({});
 
-  const critCount = risks.filter(r => r.severity === 'Critical').length;
-  const highCount = risks.filter(r => r.severity === 'High').length;
-  const selectedRisk = useMemo(() => risks.find(r => r.id === selectedId), [selectedId]);
+  const activeRiskRows = useMemo(() => riskRows.filter(r => !r.dismissed), [riskRows]);
+  const critCount = activeRiskRows.filter(r => r.severity === 'Critical').length;
+  const highCount = activeRiskRows.filter(r => r.severity === 'High').length;
+  const selectedRisk = useMemo(() => riskRows.find(r => r.id === selectedId), [riskRows, selectedId]);
 
   const showToast = (title, body, meta) => setToast({ title, body, meta });
 
@@ -644,11 +656,32 @@ export default function App() {
   }, [toast]);
 
   const handleAIAnalyze = () => {
-    if (!supplierFilter.length) return;
+    const targetSuppliers = supplierFilter.length ? supplierFilter : selectedRisk ? [selectedRisk.supplier] : [];
+    if (!targetSuppliers.length) return;
     setAiLoading(true);
     setTimeout(() => {
+      setRiskRows(prev => prev.map((risk) => {
+        if (!targetSuppliers.includes(risk.supplier)) return risk;
+        const nextConfidence = Math.min(99, risk.confidence + (risk.severity === 'Critical' ? 2 : 4));
+        const nextAudit = [
+          ...risk.audit,
+          {
+            t: 'May 10 · 11:42',
+            who: 'AI Analyze',
+            act: `Re-scored with latest source freshness; confidence ${risk.confidence}% → ${nextConfidence}%`,
+            kind: 'ai',
+          },
+        ];
+        return {
+          ...risk,
+          confidence: nextConfidence,
+          status: risk.status === 'New' ? 'In Review' : risk.status,
+          action: risk.action === 'Monitor' && risk.severity !== 'Low' ? 'Investigate' : risk.action,
+          audit: nextAudit,
+        };
+      }));
       setAiLoading(false);
-      showToast('Intelligence Refresh Complete', `Re-scored ${supplierFilter.length} suppliers against latest DDL and ERP feeds.`, 'May 10 · 11:42 · 9 sources synced');
+      showToast('AI analysis applied', `Updated ${targetSuppliers.join(', ')} with refreshed confidence, status, and audit evidence.`, 'May 10 · 11:42 · 9 sources checked');
     }, 1500);
   };
 
@@ -680,7 +713,7 @@ export default function App() {
         <>
           <GlobalMetricsSummary
             totalSuppliers="1,247"
-            activeRisks={risks.length}
+            activeRisks={activeRiskRows.length}
             critCount={critCount}
             highCount={highCount}
           />
@@ -688,7 +721,7 @@ export default function App() {
           <main className="flex-grow flex gap-3 p-3 overflow-hidden">
             <div className="w-[55%] h-full">
               <RiskQueue
-                riskRows={risks}
+                riskRows={activeRiskRows}
                 selectedId={selectedId}
                 onSelect={setSelectedId}
                 supplierFilter={supplierFilter}
@@ -725,7 +758,7 @@ export default function App() {
       </footer>
 
       <Toast toast={toast} />
-      <ChatAssistant />
+      <ChatAssistant dashboardRisks={riskRows} />
     </div>
   );
 }

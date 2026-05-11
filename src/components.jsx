@@ -553,13 +553,15 @@ export function SupplierSearch({ directory, value, onChange }) {
 }
 
 // ---------- AI Analyze Button ----------
-export function AIAnalyzeButton({ targets, onAnalyze, loading }) {
-  const disabled = targets.length === 0 || loading;
+export function AIAnalyzeButton({ targets, selectedTarget, onAnalyze, loading }) {
+  const activeTargets = targets.length ? targets : selectedTarget ? [selectedTarget] : [];
+  const disabled = activeTargets.length === 0 || loading;
   return (
     <button
       type="button"
       onClick={onAnalyze}
       disabled={disabled}
+      title={targets.length ? `Analyze ${targets.join(', ')}` : selectedTarget ? `Analyze selected supplier: ${selectedTarget}` : 'Select a supplier to analyze'}
       className={`px-3 py-1 rounded text-[10px] font-bold transition-all flex items-center gap-1.5 ${
         disabled
           ? 'bg-gray-800 text-gray-600 cursor-not-allowed'

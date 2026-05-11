@@ -2,14 +2,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Icon } from './icons';
 import { risks, dataSources, supplierDirectory } from './data';
 
-function buildSystemPrompt() {
+function buildSystemPrompt(riskRows) {
   const summary = {
     suppliers_monitored: 1247,
     suppliers_in_directory_sample: supplierDirectory.length,
-    active_risks: risks.length,
-    by_severity: ['Critical','High','Medium','Low'].reduce((acc, s) => { acc[s] = risks.filter(r => r.severity===s).length; return acc; }, {}),
+    active_risks: riskRows.length,
+    by_severity: ['Critical','High','Medium','Low'].reduce((acc, s) => { acc[s] = riskRows.filter(r => r.severity===s).length; return acc; }, {}),
     sources: dataSources.map(s => ({ name: s.name, status: s.status, last: s.last, records: s.records })),
-    risks: risks.map(r => ({
+    risks: riskRows.map(r => ({
       id: r.id, supplier: r.supplier, country: r.country, category: r.category,
       severity: r.severity, source: r.source, confidence: r.confidence,
       recommended_action: r.action, status: r.status, detected: r.detected,
@@ -31,10 +31,62 @@ DASHBOARD DATA (JSON):
 ${JSON.stringify(summary)}`;
 }
 
-export function ChatAssistant() {
+function buildFallbackReply(question, riskRows) {
+  const q = question.toLowerCase();
+  const bySupplier = (name) => riskRows.find(r => r.supplier.toLowerCase().includes(name));
+  const exposureValue = (risk) => Number(String(risk.revenueExposure || '').replace(/[^0-9.]/g, '')) || 0;
+  const foxconn = bySupplier('foxconn');
+  const quanta = bySupplier('quanta');
+  const urgent = [...riskRows]
+    .filter(r => ['Critical', 'High'].includes(r.severity))
+    .sort((a, b) => {
+      const severityScore = { Critical: 2, High: 1 };
+      const sevDelta = (severityScore[b.severity] || 0) - (severityScore[a.severity] || 0);
+      if (sevDelta) return sevDelta;
+      const exposureDelta = exposureValue(b) - exposureValue(a);
+      if (exposureDelta) return exposureDelta;
+      return (a.daysToImpact || 999) - (b.daysToImpact || 999);
+    })
+    .slice(0, 3);
+
+  if (q.includes('escalate') || q.includes('first') || q.includes('today')) {
+    return `Escalate ${urgent[0].supplier} first.\n\nWhy: ${urgent[0].revenueExposure} exposure, ${urgent[0].daysToImpact || 'unknown'} days to impact, ${urgent[0].confidence}% confidence, and ${urgent[0].reasoning}\n\nNext two to watch: ${urgent.slice(1).map(r => `${r.supplier} (${r.severity}, ${r.revenueExposure})`).join('; ')}.`;
+  }
+
+  if (q.includes('single') || q.includes('<30') || q.includes('30 day')) {
+    const single = riskRows.filter(r => !r.altSupplier && r.daysToImpact && r.daysToImpact < 30);
+    return single.length
+      ? `Single-source risks inside 30 days:\n\n${single.map(r => `• ${r.supplier}: ${r.revenueExposure}, ${r.daysToImpact}d to impact, ${r.confidence}% confidence. Products: ${r.products.slice(0, 2).join(', ')}.`).join('\n')}\n\nThis is where leadership action matters because there is no immediate qualified failover.`
+      : 'No single-source supplier currently has a sub-30-day impact window in the visible risk queue.';
+  }
+
+  if (q.includes('compare') && q.includes('foxconn') && q.includes('quanta') && foxconn && quanta) {
+    return `Foxconn is the escalation case; Quanta is the recovery-plan case.\n\nFoxconn: ${foxconn.severity}, ${foxconn.revenueExposure}, ${foxconn.daysToImpact}d to impact, ${foxconn.confidence}% confidence, single-source exposure.\n\nQuanta: ${quanta.severity}, ${quanta.revenueExposure}, ${quanta.daysToImpact}d to impact, ${quanta.confidence}% confidence, backup path through ${quanta.altSupplier?.name}.`;
+  }
+
+  if ((q.includes('geopolitical') || q.includes('foxconn')) && q.includes('poweredge') && foxconn) {
+    return `The Foxconn geopolitical event matters because PowerEdge R760 and XE9680 depend on the affected assembly path.\n\nThe business risk is not the news event itself. It is the combination of shipping disruption, single-source motherboard dependency, $148M quarterly exposure, and only 14 days of inventory buffer.`;
+  }
+
+  if (q.includes('missing') || q.includes('not available') || q.includes('unavailable')) {
+    return 'If data is missing, the dashboard should not hide the risk. It marks the missing source, lowers confidence, and creates an evidence request for an analyst or source owner.\n\nFor the demo: Revenue Consolidation is shown as failed, so revenue exposure should be treated as last-known or proxy-based until the sync is restored.';
+  }
+
+  if (q.includes('ai') || q.includes('help')) {
+    return 'AI helps in four places: summarize noisy signals, connect weak evidence across systems, explain confidence, and draft the leadership action packet.\n\nThe control point is important: AI does not approve escalation. It prepares a grounded recommendation with source freshness and audit trail.';
+  }
+
+  if (q.includes('system') || q.includes('interact') || q.includes('flow') || q.includes('architecture')) {
+    return 'The system interaction is: source systems feed the intelligence layer, the supplier graph resolves entity/product context, AI summarizes and scores the risk, then the dashboard routes a decision packet to leadership or ticketing.\n\nThe main enterprise value is that existing systems stay in place; this becomes the decision layer above them.';
+  }
+
+  return `Most important current signal: ${urgent[0].supplier} has ${urgent[0].revenueExposure} at risk with ${urgent[0].daysToImpact || 'unknown'} days to impact.\n\nAsk me about escalation priority, missing data, AI confidence, single-source risks, or Foxconn vs. Quanta for a sharper answer.`;
+}
+
+export function ChatAssistant({ dashboardRisks = risks }) {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: 'Ask me anything about the suppliers, risks, or signals on this dashboard — or adjacent questions I can reason about.' },
+    { role: 'assistant', content: 'Ask me about escalation priority, missing data, AI confidence, or how the dashboard flow works.' },
   ]);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
@@ -59,17 +111,24 @@ export function ChatAssistant() {
     return () => document.removeEventListener('keydown', onKey);
   }, [open]);
 
-  const send = async () => {
-    const text = input.trim();
-    if (!text || busy || !hasModel) return;
+  const send = async (overrideText) => {
+    const text = (overrideText || input).trim();
+    if (!text || busy) return;
     const next = [...messages, { role: 'user', content: text }];
     setMessages(next);
     setInput('');
     setBusy(true);
+    if (!hasModel) {
+      setTimeout(() => {
+        setMessages([...next, { role: 'assistant', content: buildFallbackReply(text, dashboardRisks) }]);
+        setBusy(false);
+      }, 450);
+      return;
+    }
     try {
       const reply = await window.claude.complete({
         messages: [
-          { role: 'user', content: `${buildSystemPrompt()}\n\n---\nConversation so far:\n${next.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n')}\n\nReply as ASSISTANT only.` },
+          { role: 'user', content: `${buildSystemPrompt(dashboardRisks)}\n\n---\nConversation so far:\n${next.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n')}\n\nReply as ASSISTANT only.` },
         ],
       });
       setMessages([...next, { role: 'assistant', content: (reply || '').trim() || 'No response.' }]);
@@ -126,11 +185,11 @@ export function ChatAssistant() {
             {/* Messages */}
             <div ref={scrollRef} className="flex-1 min-h-0 overflow-auto scroll-thin px-4 py-3 space-y-3">
               {!hasModel && (
-                <div className="rounded-lg border border-high/30 bg-high/[0.06] px-3 py-2.5 text-[11.5px] text-zinc-200 leading-relaxed">
+                <div className="rounded-lg border border-gold/30 bg-gold/[0.06] px-3 py-2.5 text-[11.5px] text-zinc-200 leading-relaxed">
                   <div className="mb-1 flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider text-amber-200">
-                    <Icon.AlertTriangle size={10} /> Assistant unavailable
+                    <Icon.Sparkles size={10} /> Demo assistant
                   </div>
-                  This environment has not provided <span className="font-mono text-zinc-100">window.claude.complete</span>. You can review suggested prompts, but sending is disabled until the host API is available.
+                  Prepared responses are active for the interview demo. If a host model is available, the assistant will use live grounded reasoning.
                 </div>
               )}
               {messages.map((m, i) => (
@@ -167,7 +226,7 @@ export function ChatAssistant() {
                   <button
                     type="button"
                     key={s}
-                    onClick={() => setInput(s)}
+                    onClick={() => send(s)}
                     className="text-[10.5px] px-2 py-1 rounded-full border border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:bg-white/[0.05] hover:border-white/15 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/70"
                   >{s}</button>
                 ))}
@@ -183,15 +242,15 @@ export function ChatAssistant() {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={onKey}
                   rows={1}
-                  placeholder={hasModel ? 'Ask about a supplier, risk, or what-if…' : 'Assistant host API unavailable'}
+                  placeholder="Ask about a supplier, risk, or what-if..."
                   className="flex-1 bg-transparent outline-none resize-none text-[12.5px] text-white placeholder:text-zinc-500 max-h-[120px]"
                 />
                 <button
                   type="button"
                   onClick={send}
-                  disabled={!input.trim() || busy || !hasModel}
+                  disabled={!input.trim() || busy}
                   className={`h-7 w-7 grid place-items-center rounded-md transition ${
-                    !input.trim() || busy || !hasModel
+                    !input.trim() || busy
                       ? 'bg-white/[0.04] text-zinc-500 cursor-not-allowed'
                       : 'bg-gold text-[#111827] hover:bg-gold-soft'
                   } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/70`}
@@ -199,7 +258,7 @@ export function ChatAssistant() {
                 ><Icon.ArrowRight size={13} /></button>
               </div>
               <div className="mt-1.5 px-1 text-[10px] font-mono uppercase tracking-wider text-zinc-500">
-                {hasModel ? 'Enter to send · Shift+Enter for newline · grounded in dashboard data' : 'Host API unavailable · sending disabled'}
+                Enter to send · grounded in dashboard data
               </div>
             </div>
           </div>
