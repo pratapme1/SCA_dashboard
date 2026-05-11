@@ -12,7 +12,7 @@ import { ChatAssistant } from './chat';
 const ANALYST_NAME = 'V. Pratap Kumar';
 
 // ---------- Top bar ----------
-function TopBar({ risks }) {
+function TopBar({ view, setView }) {
   return (
     <header className="h-[52px] px-4 flex items-center justify-between border-b border-gray-800 bg-[#0f172a] shrink-0">
       <div className="flex items-center gap-4">
@@ -46,12 +46,208 @@ function TopBar({ risks }) {
             <SourceHealthPill label="REV" status="red" title="Revenue: Failed" />
           </div>
         </div>
-        <button className="flex items-center gap-1.5 px-2.5 py-1 border border-gray-700 rounded text-[9px] text-gray-300 hover:bg-gray-800 transition-colors">
-          <span className="material-symbols-outlined text-[12px]">account_circle</span>
-          <span className="font-semibold uppercase tracking-wider">Executive View</span>
-        </button>
+        <div className="flex rounded border border-gray-700 bg-gray-950/40 p-0.5">
+          {[
+            { id: 'flow', label: 'System Flow', icon: 'schema' },
+            { id: 'dashboard', label: 'Risk Dashboard', icon: 'dashboard' },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setView(tab.id)}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-[9px] font-bold uppercase tracking-wider transition-colors ${
+                view === tab.id
+                  ? 'bg-primary text-[#111827]'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[12px]">{tab.icon}</span>
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
     </header>
+  );
+}
+
+// ---------- Enterprise system flow ----------
+function FlowCard({ icon, title, subtitle, items = [], tone = 'border-gray-700', delay = 0 }) {
+  return (
+    <div
+      className={`flow-card rounded-xl border ${tone} bg-[#111827] shadow-2xl px-3 py-2.5 min-w-0`}
+      style={{ animationDelay: `${delay}ms` }}
+    >
+      <div className="flex items-center gap-2 mb-1.5">
+        <div className="w-7 h-7 rounded-lg bg-gray-950 border border-gray-700 flex items-center justify-center shrink-0">
+          <span className="material-symbols-outlined text-primary text-[16px]">{icon}</span>
+        </div>
+        <div className="min-w-0">
+          <div className="text-[11px] font-bold text-white leading-tight truncate">{title}</div>
+          <div className="text-[8px] font-bold uppercase tracking-widest text-gray-500 truncate">{subtitle}</div>
+        </div>
+      </div>
+      <div className="space-y-1">
+        {items.map((item) => (
+          <div key={item} className="flex items-start gap-1.5 text-[9.5px] leading-tight text-gray-300">
+            <span className="mt-[5px] h-1 w-1 rounded-full bg-primary/80 shrink-0"></span>
+            <span>{item}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FlowArrow({ label }) {
+  return (
+    <div className="hidden lg:flex flex-col items-center justify-center min-w-[34px]">
+      <div className="flow-arrow-line w-full h-px bg-gradient-to-r from-gray-700 via-primary to-gray-700"></div>
+      <div className="mt-1 text-[7px] font-bold uppercase tracking-widest text-gray-500 whitespace-nowrap">{label}</div>
+    </div>
+  );
+}
+
+function SourceTile({ icon, title, sub, status }) {
+  const statusClass = status === 'ready' ? 'bg-green-500' : status === 'delayed' ? 'bg-yellow-500' : 'bg-red-500';
+  return (
+    <div className="rounded-lg border border-gray-800 bg-gray-950/45 px-2.5 py-2 flex items-center gap-2 min-w-0">
+      <span className="material-symbols-outlined text-[15px] text-gray-400 shrink-0">{icon}</span>
+      <div className="min-w-0 flex-1">
+        <div className="text-[10px] font-bold text-white leading-tight truncate">{title}</div>
+        <div className="text-[8px] text-gray-500 truncate">{sub}</div>
+      </div>
+      <span className={`h-1.5 w-1.5 rounded-full ${statusClass} ${status !== 'ready' ? 'animate-pulse' : ''}`}></span>
+    </div>
+  );
+}
+
+function SystemFlow() {
+  const sourceTiles = [
+    { icon: 'database', title: 'ERP / POs', sub: 'orders, commits, lead time', status: 'ready' },
+    { icon: 'shield', title: 'Risk Tools', sub: 'TPRM, Resilinc, RiskMethods', status: 'ready' },
+    { icon: 'public', title: 'DDL / Sanctions', sub: 'restricted lists, advisories', status: 'delayed' },
+    { icon: 'description', title: 'Audit PDFs', sub: 'RBA, CAPs, supplier docs', status: 'ready' },
+    { icon: 'payments', title: 'Revenue / Contracts', sub: 'BU exposure, policy thresholds', status: 'blocked' },
+    { icon: 'memory', title: 'Cyber Feeds', sub: 'CVE, incidents, EDI alerts', status: 'ready' },
+  ];
+
+  const stages = [
+    {
+      icon: 'hub',
+      title: 'Ingest',
+      subtitle: 'connectors + freshness',
+      tone: 'border-sky-500/30',
+      items: ['Batch or API sync', 'Retry and failure status', 'Document parsing'],
+    },
+    {
+      icon: 'account_tree',
+      title: 'Resolve',
+      subtitle: 'supplier graph',
+      tone: 'border-violet-500/30',
+      items: ['Supplier identity match', 'Site and parent mapping', 'Product/SKU linkage'],
+    },
+    {
+      icon: 'auto_awesome',
+      title: 'AI Risk Layer',
+      subtitle: 'assist, not autopilot',
+      tone: 'border-primary/40',
+      items: ['Summarize weak signals', 'Explain confidence', 'Detect missing evidence'],
+    },
+    {
+      icon: 'analytics',
+      title: 'Decision Engine',
+      subtitle: 'rank what matters',
+      tone: 'border-red-500/35',
+      items: ['Severity + confidence', 'Revenue at risk', 'Days to impact'],
+    },
+    {
+      icon: 'approval_delegation',
+      title: 'Action Layer',
+      subtitle: 'human-in-loop',
+      tone: 'border-green-500/30',
+      items: ['Escalate packet', 'Assign analyst', 'Audit trail'],
+    },
+  ];
+
+  return (
+    <main className="flex-grow p-3 overflow-hidden">
+      <section className="h-full rounded-xl border border-gray-800 bg-[#0f172a] overflow-hidden flex flex-col">
+        <div className="px-4 py-3 border-b border-gray-800 flex items-start justify-between gap-4 shrink-0">
+          <div>
+            <div className="text-[9px] text-primary uppercase tracking-[0.22em] font-bold mb-1">Enterprise implementation flow</div>
+            <h2 className="text-xl font-bold text-white tracking-tight leading-none">How supplier signals become a leadership decision</h2>
+            <p className="mt-1.5 text-[11px] text-gray-400 max-w-3xl leading-snug">
+              The dashboard does not replace ERP, TPRM, procurement, or ticketing systems. It connects their signals, resolves supplier/product context, and packages the decision with evidence.
+            </p>
+          </div>
+          <div className="grid grid-cols-3 gap-2 w-[430px] shrink-0">
+            {[
+              ['Most important', 'Product impact, exposure, days to impact'],
+              ['AI helps with', 'summaries, confidence, weak-signal joins'],
+              ['If data is missing', 'flag gaps, use proxies, request evidence'],
+            ].map(([k, v]) => (
+              <div key={k} className="rounded-lg border border-gray-800 bg-gray-950/50 px-2.5 py-2">
+                <div className="text-[7px] font-bold uppercase tracking-widest text-primary">{k}</div>
+                <div className="mt-1 text-[9.5px] leading-tight text-gray-300">{v}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex-1 min-h-0 p-4 grid grid-rows-[auto_1fr_auto] gap-3">
+          <div className="grid grid-cols-6 gap-2">
+            {sourceTiles.map((src) => <SourceTile key={src.title} {...src} />)}
+          </div>
+
+          <div className="relative rounded-xl border border-gray-800 bg-[#0b1120] px-4 py-4 overflow-hidden">
+            <div className="absolute inset-x-8 top-1/2 h-px bg-gradient-to-r from-transparent via-primary/25 to-transparent"></div>
+            <div className="relative h-full grid grid-cols-[1fr_34px_1fr_34px_1fr_34px_1fr_34px_1fr] gap-2 items-center">
+              {stages.map((stage, index) => (
+                <React.Fragment key={stage.title}>
+                  <FlowCard {...stage} delay={index * 110} />
+                  {index < stages.length - 1 && (
+                    <FlowArrow label={['normalize', 'enrich', 'score', 'route'][index]} />
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-[1.1fr_1fr_1fr] gap-3 shrink-0">
+            <div className="rounded-xl border border-primary/25 bg-primary/5 px-3 py-2.5">
+              <div className="flex items-center gap-2 text-primary text-[9px] font-bold uppercase tracking-widest">
+                <span className="material-symbols-outlined text-[14px]">auto_awesome</span>
+                AI controls
+              </div>
+              <div className="mt-1.5 grid grid-cols-3 gap-2 text-[9.5px] text-gray-300 leading-tight">
+                <span>Grounded only in connected evidence</span>
+                <span>Shows confidence and source freshness</span>
+                <span>Leaves final action to humans</span>
+              </div>
+            </div>
+            <div className="rounded-xl border border-yellow-500/25 bg-yellow-500/5 px-3 py-2.5">
+              <div className="flex items-center gap-2 text-yellow-400 text-[9px] font-bold uppercase tracking-widest">
+                <span className="material-symbols-outlined text-[14px]">rule</span>
+                Missing data behavior
+              </div>
+              <div className="mt-1.5 text-[9.5px] text-gray-300 leading-tight">
+                If a source is delayed or unavailable, the risk is not hidden. The dashboard marks evidence gaps, lowers confidence, and routes the item for analyst validation.
+              </div>
+            </div>
+            <div className="rounded-xl border border-green-500/25 bg-green-500/5 px-3 py-2.5">
+              <div className="flex items-center gap-2 text-green-400 text-[9px] font-bold uppercase tracking-widest">
+                <span className="material-symbols-outlined text-[14px]">integration_instructions</span>
+                Enterprise actions
+              </div>
+              <div className="mt-1.5 text-[9.5px] text-gray-300 leading-tight">
+                Output can create ServiceNow/Jira tickets, Teams/Slack alerts, email packets, and procurement follow-ups with the same audit record.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }
 
@@ -426,6 +622,7 @@ function DecisionBrief({ risk, assignee, escalation, onEscalateConfirm, onAssign
 
 // ---------- Main App Component ----------
 export default function App() {
+  const [view, setView] = useState('flow');
   const [selectedId, setSelectedId] = useState('r-001');
   const [supplierFilter, setSupplierFilter] = useState([]);
   const [aiLoading, setAiLoading] = useState(false);
@@ -475,40 +672,46 @@ export default function App() {
 
   return (
     <div className="flex flex-col h-screen bg-[#0b1120] text-gray-100 overflow-hidden">
-      <TopBar risks={risks} />
-      
-      <GlobalMetricsSummary 
-        totalSuppliers="1,247" 
-        activeRisks={risks.length} 
-        critCount={critCount} 
-        highCount={highCount} 
-      />
+      <TopBar view={view} setView={setView} />
 
-      <main className="flex-grow flex gap-3 p-3 overflow-hidden">
-        <div className="w-[55%] h-full">
-          <RiskQueue 
-            riskRows={risks} 
-            selectedId={selectedId} 
-            onSelect={setSelectedId} 
-            supplierFilter={supplierFilter} 
-            setSupplierFilter={setSupplierFilter}
-            onAIAnalyze={handleAIAnalyze}
-            aiLoading={aiLoading}
+      {view === 'flow' ? (
+        <SystemFlow />
+      ) : (
+        <>
+          <GlobalMetricsSummary
+            totalSuppliers="1,247"
+            activeRisks={risks.length}
+            critCount={critCount}
+            highCount={highCount}
           />
-        </div>
 
-        <div className="w-[45%] h-full">
-          <DecisionBrief 
-            key={selectedRisk?.id || 'empty'}
-            risk={selectedRisk}
-            assignee={assignments[selectedRisk?.id]}
-            escalation={escalations[selectedRisk?.id]}
-            onEscalateConfirm={handleEscalate}
-            onAssignConfirm={handleAssign}
-            onMonitor={(r) => showToast(`Monitoring ${r.supplier}`, 'Added to high-priority watch list.', 'Weekly refresh active')}
-          />
-        </div>
-      </main>
+          <main className="flex-grow flex gap-3 p-3 overflow-hidden">
+            <div className="w-[55%] h-full">
+              <RiskQueue
+                riskRows={risks}
+                selectedId={selectedId}
+                onSelect={setSelectedId}
+                supplierFilter={supplierFilter}
+                setSupplierFilter={setSupplierFilter}
+                onAIAnalyze={handleAIAnalyze}
+                aiLoading={aiLoading}
+              />
+            </div>
+
+            <div className="w-[45%] h-full">
+              <DecisionBrief
+                key={selectedRisk?.id || 'empty'}
+                risk={selectedRisk}
+                assignee={assignments[selectedRisk?.id]}
+                escalation={escalations[selectedRisk?.id]}
+                onEscalateConfirm={handleEscalate}
+                onAssignConfirm={handleAssign}
+                onMonitor={(r) => showToast(`Monitoring ${r.supplier}`, 'Added to high-priority watch list.', 'Weekly refresh active')}
+              />
+            </div>
+          </main>
+        </>
+      )}
 
       <footer className="h-7 bg-[#0b1120] border-t border-gray-800 flex items-center justify-between px-4 shrink-0 relative z-10">
         <div className="flex items-center gap-3">
